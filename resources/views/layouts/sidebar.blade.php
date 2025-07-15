@@ -27,14 +27,14 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('profile.edit') }}" class="menu-link">
+                    <a href="{{ route('lecturer.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
-                            'active-icon' => request()->routeIs('profile.*'),
+                            'active-icon' => request()->routeIs('lecturer.*'),
                             'fa-solid',
-                            'fa-clipboard-list',
+                            'fa-chalkboard-user',
                         ])></i>
-                        <div class="text-slate-500">Hasil Pengukuran</div>
+                        <div class="text-slate-500">Data Dosen</div>
                     </a>
                 </li>
                 <li class="menu-item">
