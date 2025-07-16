@@ -124,20 +124,32 @@
                     buttons: [{
                             extend: 'csv',
                             text: 'Export CSV',
+                            title: 'Data Dosen',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `data_dosen_${formattedTimestamp}`
+                            filename: `data_dosen_${formattedTimestamp}`,
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            }
                         },
                         {
                             extend: 'excel',
                             text: 'Export Excel',
+                            title: 'Data Dosen',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `data_dosen_${formattedTimestamp}`
+                            filename: `data_dosen_${formattedTimestamp}`,
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            }
                         },
                         {
                             extend: 'pdf',
                             text: 'Export PDF',
+                            title: 'Data Dosen',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `data_dosen_${formattedTimestamp}`
+                            filename: `data_dosen_${formattedTimestamp}`,
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6]
+                            }
                         },
                     ],
                     language: {
