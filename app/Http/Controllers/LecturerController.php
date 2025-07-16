@@ -65,7 +65,7 @@ class LecturerController extends Controller
             ->causedBy(Auth::user())
             ->log('Dosen baru ditambahkan: ' . $request->name);
 
-        return redirect()->route('lecturer.index')->with('success', 'Berhasil tambah data dosen.');
+        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil ditambahkan.');
     }
 
     /**
@@ -138,7 +138,7 @@ class LecturerController extends Controller
             ->causedBy(Auth::user())
             ->log('Dosen dengan ID ' . $lecturer->id . ' berhasil diupdate');
 
-        return redirect()->route('lecturer.index')->with('success', 'Berhasil update data dosen.');
+        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil diupdate.');
     }
 
     /**
@@ -155,6 +155,6 @@ class LecturerController extends Controller
             ->causedBy(Auth::user())
             ->log('Dosen dihapus: ' . $lecturer->name);
 
-        return redirect()->route('lecturer.index')->with('success', 'Berhasil hapus data dosen.');
+        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil dihapus.');
     }
 }
