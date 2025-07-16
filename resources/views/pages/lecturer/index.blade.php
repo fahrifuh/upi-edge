@@ -145,7 +145,7 @@
                         lengthMenu: "Tampilkan _MENU_ entri",
                         emptyTable: "Tidak ada data dosen yang tersedia",
                         info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                        infoEmpty: "Tidak ada data dosen yang dapat ditampil.",
+                        infoEmpty: "Tidak ada data dosen yang dapat ditampilkan.",
                         zeroRecords: "Data dosen tidak ditemukan.",
                         infoFiltered: "(difilter dari _MAX_ total entri)",
                         paginate: {
