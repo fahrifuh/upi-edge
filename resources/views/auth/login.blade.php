@@ -33,9 +33,20 @@
         </div>
 
         <div class="mt-4">
+            {!! NoCaptcha::display() !!}
+            @error('g-recaptcha-response')
+                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mt-4">
             <x-primary-button class="w-full justify-center">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
+
+    @push('scripts')
+        {!! NoCaptcha::renderJs() !!}
+    @endpush
 </x-guest-layout>

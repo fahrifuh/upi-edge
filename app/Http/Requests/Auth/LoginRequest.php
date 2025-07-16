@@ -29,6 +29,15 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', 'captcha'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'g-recaptcha-response.required' => 'Silakan centang kotak captcha terlebih dahulu.',
+            'g-recaptcha-response.captcha' => 'Captcha tidak valid atau sudah kedaluwarsa.',
         ];
     }
 
@@ -80,6 +89,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }
