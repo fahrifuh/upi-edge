@@ -59,8 +59,8 @@
                         <div class="text-slate-500">Bug Report</div>
                     </a>
                 </li> --}}
-                {{-- <li class="menu-item">
-                    <a href="#" class="menu-link">
+                <li class="menu-item">
+                    <a href="{{ route('activity-log.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
                             'active-icon' => request()->routeIs('activity-log.*'),
@@ -69,7 +69,7 @@
                         ])></i>
                         <div class="text-slate-500">Log Aktivitas</div>
                     </a>
-                </li> --}}
+                </li>
             </ul>
         </div>
         <div id="menu-footer" class="mb-3 text-center font-normal text-sm text-slate-500"></div>
