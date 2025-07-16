@@ -44,7 +44,7 @@
     @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Data Dosen') }}
+            {{ __('Data Mahasiswa') }}
         </h2>
     </x-slot>
 
@@ -52,15 +52,16 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
-                    <h1 class="text-3xl font-extrabold text-start">Tabel Data Dosen</h1>
-                    <a href="{{ route('lecturer.create') }}"
+                    <h1 class="text-3xl font-extrabold text-start">Tabel Data Mahasiswa</h1>
+                    <a href="{{ route('student.create') }}"
                         class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
                 </div>
                 <div class="overflow-x-scroll">
-                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="lecturer-table">
+                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="student-table">
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>NIM</th>
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>No. Telpon</th>
@@ -71,27 +72,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lecturers as $lecturer)
+                            @foreach ($students as $student)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $lecturer->name }}</td>
-                                    <td>{{ $lecturer->email }}</td>
-                                    <td>{{ $lecturer->phone }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($lecturer->birth_date)->translatedFormat('d F Y') }}</td>
-                                    <td>{{ $lecturer->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
-                                    <td>{{ $lecturer->address }}</td>
-                                    <td class="flex space-x-2 items-center">
-                                        <a href="{{ route('lecturer.edit', $lecturer->id) }}">
-                                            <i class="fa fa-pen text-blue-500"></i>
-                                        </a>
-                                        <form action="{{ route('lecturer.destroy', $lecturer->id) }}" method="POST"
-                                            class="delete-form" data-nama="{{ $lecturer->name }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa fa-trash text-red-500"></i>
-                                            </button>
-                                        </form>
+                                    <td>{{ $student->nim }}</td>
+                                    <td>{{ $student->name }}</td>
+                                    <td>{{ $student->email }}</td>
+                                    <td>{{ $student->phone }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($student->birth_date)->translatedFormat('d F Y') }}</td>
+                                    <td>{{ $student->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
+                                    <td>{{ $student->address }}</td>
+                                    <td class="h-full">
+                                        <div class="flex items-center gap-2 h-full">
+                                            <a href="{{ route('student.edit', $student->id) }}" class="h-100">
+                                                <i class="fa fa-pen text-blue-500"></i>
+                                            </a>
+                                            <form action="{{ route('student.destroy', $student->id) }}" method="POST"
+                                                class="delete-form" data-nama="{{ $student->name }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">
+                                                    <i class="fa fa-trash text-red-500"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -114,7 +118,7 @@
                 const seconds = now.getSeconds().toString().padStart(2, '0');
                 const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
 
-                $('#lecturer-table').DataTable({
+                $('#student-table').DataTable({
                     responsive: true,
                     pageLength: 10,
                     search: {
@@ -124,41 +128,41 @@
                     buttons: [{
                             extend: 'csv',
                             text: 'Export CSV',
-                            title: 'Data Dosen',
+                            title: 'Data Mahasiswa',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_mahasiswa_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
                         },
                         {
                             extend: 'excel',
                             text: 'Export Excel',
-                            title: 'Data Dosen',
+                            title: 'Data Mahasiswa',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_mahasiswa_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
                         },
                         {
                             extend: 'pdf',
                             text: 'Export PDF',
-                            title: 'Data Dosen',
+                            title: 'Data Mahasiswa',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_mahasiswa_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
                         },
                     ],
                     language: {
                         search: "Cari:",
                         lengthMenu: "Tampilkan _MENU_ entri",
-                        emptyTable: "Tidak ada data dosen yang tersedia",
+                        emptyTable: "Tidak ada data mahasiswa yang tersedia",
                         info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                        infoEmpty: "Tidak ada data dosen yang dapat ditampilkan.",
-                        zeroRecords: "Data dosen tidak ditemukan.",
+                        infoEmpty: "Tidak ada data mahasiswa yang dapat ditampilkan.",
+                        zeroRecords: "Data mahasiswa tidak ditemukan.",
                         infoFiltered: "(difilter dari _MAX_ total entri)",
                         paginate: {
                             previous: "<",
@@ -166,10 +170,10 @@
                         }
                     },
                     columnDefs: [{
-                        targets: [3, 5, 6, 7],
+                        targets: [4, 6, 7, 8],
                         orderable: false
                     }, {
-                        targets: [0, 7],
+                        targets: [0, 8],
                         searchable: false
                     }],
                 });
@@ -189,10 +193,10 @@
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
 
-                    const lecturerName = this.getAttribute('data-nama');
+                    const studentName = this.getAttribute('data-nama');
                     Swal.fire({
                         title: 'Konfirmasi',
-                        text: `Apakah Anda yakin ingin menghapus data dosen bernama ${lecturerName}?`,
+                        text: `Apakah Anda yakin ingin menghapus data mahasiswa bernama ${studentName}?`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, Hapus!',

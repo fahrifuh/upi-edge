@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,6 +27,16 @@ Route::middleware('auth')->group(function () {
         'edit' => 'lecturer.edit',
         'update' => 'lecturer.update',
         'destroy' => 'lecturer.destroy',
+    ]);
+
+    Route::resource('students', StudentController::class)->names([
+        'index' => 'student.index',
+        'create' => 'student.create',
+        'store' => 'student.store',
+        'show' => 'student.show',
+        'edit' => 'student.edit',
+        'update' => 'student.update',
+        'destroy' => 'student.destroy',
     ]);
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');

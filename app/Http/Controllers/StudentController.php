@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lecturer;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LecturerController extends Controller
+class StudentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $lecturers = Lecturer::get();
-        return view('pages.lecturer.index', compact('lecturers'));
+        $students = Student::get();
+        return view('pages.student.index', compact('students'));
     }
 
     /**
@@ -22,7 +22,7 @@ class LecturerController extends Controller
      */
     public function create()
     {
-        return view('pages.lecturer.create');
+        return view('pages.student.create');
     }
 
     /**
@@ -31,13 +31,16 @@ class LecturerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nim' => 'required|string|unique:students,nim',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email',
+            'email' => 'required|email|unique:students,email',
             'phone' => 'required|string|max:15',
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
             'birth_date' => 'required|date',
         ], [
+            'nim.required' => 'NIM harus diisi.',
+            'nim.unique' => 'NIM sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
@@ -49,6 +52,7 @@ class LecturerController extends Controller
         ]);
 
         $data = [
+            'nim' => $request->nim,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
@@ -57,15 +61,15 @@ class LecturerController extends Controller
             'birth_date' => $request->birth_date,
         ];
 
-        $post = Lecturer::create($data);
+        $post = Student::create($data);
 
         activity()
             ->performedOn($post)
             ->event('create')
             ->causedBy(Auth::user())
-            ->log('Dosen baru ditambahkan: ' . $request->name);
+            ->log('Membuat data mahasiswa baru: ' . $post->name);
 
-        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil ditambahkan.');
+        return redirect()->route('student.index')->with('success', 'Data mahasiswa berhasil ditambahkan.');
     }
 
     /**
@@ -81,8 +85,8 @@ class LecturerController extends Controller
      */
     public function edit(string $id)
     {
-        $lecturer = Lecturer::findOrFail($id);
-        return view('pages.lecturer.edit', compact('lecturer'));
+        $student = Student::findOrFail($id);
+        return view('pages.student.edit', compact('student'));
     }
 
     /**
@@ -91,6 +95,7 @@ class LecturerController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
+            'nim' => 'required|string|unique:students,nim,' . $id,
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:lecturers,email,' . $id,
             'phone' => 'required|string|max:15',
@@ -98,6 +103,8 @@ class LecturerController extends Controller
             'gender' => 'required|in:l,p',
             'birth_date' => 'required|date',
         ], [
+            'nim.required' => 'NIM harus diisi.',
+            'nim.unique' => 'NIM sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
@@ -109,6 +116,7 @@ class LecturerController extends Controller
         ]);
 
         $data = [
+            'nim' => $request->nim,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
@@ -117,9 +125,9 @@ class LecturerController extends Controller
             'birth_date' => $request->birth_date,
         ];
 
-        $lecturer = Lecturer::findOrFail($id);
-        $beforeUpdate = $lecturer->getOriginal();
-        $lecturer->update($data);
+        $student = Student::findOrFail($id);
+        $beforeUpdate = $student->getOriginal();
+        $student->update($data);
 
         $changes = [];
         foreach ($data as $key => $value) {
@@ -132,13 +140,13 @@ class LecturerController extends Controller
         }
 
         activity()
-            ->performedOn($lecturer)
+            ->performedOn($student)
             ->event('update')
             ->withProperties(['changes' => $changes])
             ->causedBy(Auth::user())
-            ->log('Dosen dengan ID ' . $lecturer->id . ' berhasil diupdate');
+            ->log('Mahasiswa dengan ID ' . $student->id . ' berhasil diupdate');
 
-        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil diupdate.');
+        return redirect()->route('student.index')->with('success', 'Data mahasiswa berhasil diupdate.');
     }
 
     /**
@@ -146,15 +154,15 @@ class LecturerController extends Controller
      */
     public function destroy(string $id)
     {
-        $lecturer = Lecturer::findOrFail($id);
-        $lecturer->delete();
+        $student = Student::findOrFail($id);
+        $student->delete();
 
         activity()
-            ->performedOn($lecturer)
+            ->performedOn($student)
             ->event('delete')
             ->causedBy(Auth::user())
-            ->log('Dosen dihapus: ' . $lecturer->name);
+            ->log('Mahasiswa dihapus: ' . $student->name);
 
-        return redirect()->route('lecturer.index')->with('success', 'Data dosen berhasil dihapus.');
+        return redirect()->route('student.index')->with('success', 'Data mahasiswa berhasil dihapus.');
     }
 }
