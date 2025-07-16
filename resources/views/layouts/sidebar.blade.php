@@ -1,6 +1,6 @@
 <div>
     <div :class="{ 'block': sideopen, 'hidden': !sideopen }"
-        class="flex flex-col bg-white w-64 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 lg:ml-0 lg:mr-0 max-md:hidden overflow-y-scroll styled-scrollbars"
+        class="flex flex-col bg-white w-64 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 lg:ml-0 lg:mr-0 max-md:hidden overflow-y-scroll styled-scrollbars h-full"
         id="sidebar">
         <div id="app-brand" class="w-full h-16 mt-3 px-8">
             <a href="#" class="flex items-center" id="app-logo">
@@ -27,14 +27,14 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('profile.edit') }}" class="menu-link">
+                    <a href="{{ route('lecturer.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
-                            'active-icon' => request()->routeIs('profile.*'),
+                            'active-icon' => request()->routeIs('lecturer.*'),
                             'fa-solid',
-                            'fa-clipboard-list',
+                            'fa-chalkboard-user',
                         ])></i>
-                        <div class="text-slate-500">Hasil Pengukuran</div>
+                        <div class="text-slate-500">Data Dosen</div>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -59,8 +59,8 @@
                         <div class="text-slate-500">Bug Report</div>
                     </a>
                 </li> --}}
-                {{-- <li class="menu-item">
-                    <a href="#" class="menu-link">
+                <li class="menu-item">
+                    <a href="{{ route('activity-log.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
                             'active-icon' => request()->routeIs('activity-log.*'),
@@ -69,7 +69,7 @@
                         ])></i>
                         <div class="text-slate-500">Log Aktivitas</div>
                     </a>
-                </li> --}}
+                </li>
             </ul>
         </div>
         <div id="menu-footer" class="mb-3 text-center font-normal text-sm text-slate-500"></div>
