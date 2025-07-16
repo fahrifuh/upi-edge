@@ -157,7 +157,7 @@
                         targets: [3, 5, 6, 7],
                         orderable: false
                     }, {
-                        targets: [0, 3, 7],
+                        targets: [0, 7],
                         searchable: false
                     }],
                 });
