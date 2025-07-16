@@ -77,7 +77,7 @@
                                     <td>{{ $lecturer->name }}</td>
                                     <td>{{ $lecturer->email }}</td>
                                     <td>{{ $lecturer->phone }}</td>
-                                    <td>{{ $lecturer->birth_date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($lecturer->birth_date)->translatedFormat('d F Y') }}</td>
                                     <td>{{ $lecturer->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
                                     <td>{{ $lecturer->address }}</td>
                                     <td class="flex space-x-2 items-center">
