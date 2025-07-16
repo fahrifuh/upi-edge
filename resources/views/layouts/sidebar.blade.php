@@ -1,6 +1,6 @@
 <div>
     <div :class="{ 'block': sideopen, 'hidden': !sideopen }"
-        class="flex flex-col bg-white w-64 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 lg:ml-0 lg:mr-0 max-md:hidden overflow-y-scroll styled-scrollbars"
+        class="flex flex-col bg-white w-64 lg:fixed lg:top-0 lg:bottom-0 lg:left-0 lg:ml-0 lg:mr-0 max-md:hidden overflow-y-scroll styled-scrollbars h-full"
         id="sidebar">
         <div id="app-brand" class="w-full h-16 mt-3 px-8">
             <a href="#" class="flex items-center" id="app-logo">
