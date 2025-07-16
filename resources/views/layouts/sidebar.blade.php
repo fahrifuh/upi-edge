@@ -38,6 +38,17 @@
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a href="{{ route('student.index') }}" class="menu-link">
+                        <i @class([
+                            'menu-icon',
+                            'active-icon' => request()->routeIs('student.*'),
+                            'fa-solid',
+                            'fa-user-graduate',
+                        ])></i>
+                        <div class="text-slate-500">Data Mahasiswa</div>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a href="{{ route('profile.edit') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
@@ -48,17 +59,6 @@
                         <div class="text-slate-500">Pengaturan Akun</div>
                     </a>
                 </li>
-                {{-- <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i @class([
-                            'menu-icon',
-                            'active-icon' => request()->routeIs('bug-report.*'),
-                            'fa-solid',
-                            'fa-triangle-exclamation',
-                        ])></i>
-                        <div class="text-slate-500">Bug Report</div>
-                    </a>
-                </li> --}}
                 <li class="menu-item">
                     <a href="{{ route('activity-log.index') }}" class="menu-link">
                         <i @class([
