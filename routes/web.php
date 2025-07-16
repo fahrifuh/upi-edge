@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware('auth')->group(function () {
         'update' => 'lecturer.update',
         'destroy' => 'lecturer.destroy',
     ]);
+
+    Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
 });
 
 require __DIR__ . '/auth.php';
