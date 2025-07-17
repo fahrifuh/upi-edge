@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ActivityScheduleController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -37,6 +38,16 @@ Route::middleware('auth')->group(function () {
         'edit' => 'student.edit',
         'update' => 'student.update',
         'destroy' => 'student.destroy',
+    ]);
+
+    Route::resource('activity-schedule', ActivityScheduleController::class)->names([
+        'index' => 'activity-schedule.index',
+        'create' => 'activity-schedule.create',
+        'store' => 'activity-schedule.store',
+        'show' => 'activity-schedule.show',
+        'edit' => 'activity-schedule.edit',
+        'update' => 'activity-schedule.update',
+        'destroy' => 'activity-schedule.destroy',
     ]);
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
