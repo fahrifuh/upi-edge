@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('nim')->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('major')->nullable();
+            $table->string('semester')->nullable();
             $table->string('address')->nullable();
-            $table->date('birth_date')->nullable();
+            $table->string('photo')->nullable();
             $table->enum('gender', ['l', 'p'])->default('l')->comment('l: laki-laki, p: perempuan');
             $table->timestamps();
         });
