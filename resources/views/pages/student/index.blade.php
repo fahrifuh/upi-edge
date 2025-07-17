@@ -64,9 +64,9 @@
                                 <th>NIM</th>
                                 <th>Nama</th>
                                 <th>Email</th>
-                                <th>No. Telpon</th>
-                                <th>Tanggal Lahir</th>
                                 <th>Jenis Kelamin</th>
+                                <th>Jurusan</th>
+                                <th>Semester</th>
                                 <th>Alamat</th>
                                 <th>Aksi</th>
                             </tr>
@@ -78,12 +78,15 @@
                                     <td>{{ $student->nim }}</td>
                                     <td>{{ $student->name }}</td>
                                     <td>{{ $student->email }}</td>
-                                    <td>{{ $student->phone }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($student->birth_date)->translatedFormat('d F Y') }}</td>
                                     <td>{{ $student->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
+                                    <td>{{ $student->major }}</td>
+                                    <td>{{ $student->semester }}</td>
                                     <td>{{ $student->address }}</td>
                                     <td class="h-full">
                                         <div class="flex items-center gap-2 h-full">
+                                            <a href="{{ route('student.show', $student->id) }}" class="h-100">
+                                                <i class="fa fa-circle-info text-green-500"></i>
+                                            </a>
                                             <a href="{{ route('student.edit', $student->id) }}" class="h-100">
                                                 <i class="fa fa-pen text-blue-500"></i>
                                             </a>
@@ -170,7 +173,7 @@
                         }
                     },
                     columnDefs: [{
-                        targets: [4, 6, 7, 8],
+                        targets: [8],
                         orderable: false
                     }, {
                         targets: [0, 8],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,34 +35,40 @@ class StudentController extends Controller
             'nim' => 'required|string|unique:students,nim',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:students,email',
-            'phone' => 'required|string|max:15',
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
-            'birth_date' => 'required|date',
+            'major' => 'required|string',
+            'semester' => 'required|integer|min:1',
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'nim.required' => 'NIM harus diisi.',
             'nim.unique' => 'NIM sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
-            'phone.required' => 'Nomor telepon harus diisi.',
             'address.required' => 'Alamat harus diisi.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
-            'birth_date.required' => 'Tanggal lahir harus diisi.',
-            'birth_date.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
+            'major.required' => 'Jurusan harus diisi.',
+            'semester.required' => 'Semester harus diisi.',
+            'photo.required' => 'Foto harus diunggah.',
+            'photo.image' => 'File yang diunggah harus berupa gambar.',
+            'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
         ]);
 
         $data = [
             'nim' => $request->nim,
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
             'address' => $request->address,
             'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
+            'major' => $request->major,
+            'semester' => $request->semester,
         ];
 
-        $post = Student::create($data);
+        $photo = ImageService::image_intervention($request->file('photo'), 'uploads/students/', 1 / 1);
+
+        $post = Student::create($data + ['photo' => $photo]);
 
         activity()
             ->performedOn($post)
@@ -97,32 +104,35 @@ class StudentController extends Controller
         $request->validate([
             'nim' => 'required|string|unique:students,nim,' . $id,
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email,' . $id,
-            'phone' => 'required|string|max:15',
+            'email' => 'required|email|unique:students,email,' . $id,
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
-            'birth_date' => 'required|date',
+            'major' => 'required|string',
+            'semester' => 'required|integer|min:1',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'nim.required' => 'NIM harus diisi.',
             'nim.unique' => 'NIM sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
-            'phone.required' => 'Nomor telepon harus diisi.',
             'address.required' => 'Alamat harus diisi.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
-            'birth_date.required' => 'Tanggal lahir harus diisi.',
-            'birth_date.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
+            'major.required' => 'Jurusan harus diisi.',
+            'semester.required' => 'Semester harus diisi.',
+            'photo.image' => 'File yang diunggah harus berupa gambar.',
+            'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
         ]);
 
         $data = [
             'nim' => $request->nim,
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
             'address' => $request->address,
             'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
+            'major' => $request->major,
+            'semester' => $request->semester,
         ];
 
         $student = Student::findOrFail($id);
@@ -130,6 +140,17 @@ class StudentController extends Controller
         $student->update($data);
 
         $changes = [];
+
+        if ($request->hasFile('photo')) {
+            ImageService::deleteImage($student->photo);
+            $photo = ImageService::image_intervention($request->file('photo'), 'uploads/students/', 1 / 1);
+            $student->update(['photo' => $photo]);
+            $changes['photo'] = [
+                'old' => $beforeUpdate['photo'],
+                'new' => $photo,
+            ];
+        }
+
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $beforeUpdate) &&  $beforeUpdate[$key] !== $value) {
                 $changes[$key] = [
@@ -156,6 +177,10 @@ class StudentController extends Controller
     {
         $student = Student::findOrFail($id);
         $student->delete();
+
+        if ($student->photo) {
+            ImageService::deleteImage($student->photo);
+        }
 
         activity()
             ->performedOn($student)
