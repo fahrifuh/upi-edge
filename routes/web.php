@@ -40,11 +40,10 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'student.destroy',
     ]);
 
-    Route::resource('activity-schedule', ActivityScheduleController::class)->names([
+    Route::resource('activity-schedule', ActivityScheduleController::class)->except('show')->names([
         'index' => 'activity-schedule.index',
         'create' => 'activity-schedule.create',
         'store' => 'activity-schedule.store',
-        'show' => 'activity-schedule.show',
         'edit' => 'activity-schedule.edit',
         'update' => 'activity-schedule.update',
         'destroy' => 'activity-schedule.destroy',
