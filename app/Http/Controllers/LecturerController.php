@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lecturer;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,33 +32,42 @@ class LecturerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nip' => 'required|string|unique:lecturers,nip',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:lecturers,email',
-            'phone' => 'required|string|max:15',
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
-            'birth_date' => 'required|date',
+            'department' => 'required|string',
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ], [
+            'nip.required' => 'NIP harus diisi.',
+            'nip.unique' => 'NIP sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
-            'phone.required' => 'Nomor telepon harus diisi.',
             'address.required' => 'Alamat harus diisi.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
-            'birth_date.required' => 'Tanggal lahir harus diisi.',
-            'birth_date.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
+            'department.required' => 'Departemen harus diisi.',
+            'photo.required' => 'Foto harus diunggah.',
+            'photo.image' => 'File yang diunggah harus berupa gambar.',
+            'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
         ]);
 
         $data = [
+            'nip' => $request->nip,
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
             'address' => $request->address,
             'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
+            'department' => $request->department,
         ];
 
-        $post = Lecturer::create($data);
+        $photo = ImageService::image_intervention($request->file('photo'), 'uploads/lecturers/', 1 / 1);
+
+        $post = Lecturer::create($data + [
+            'photo' => $photo,
+        ]);
 
         activity()
             ->performedOn($post)
@@ -91,30 +101,34 @@ class LecturerController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
+            'nip' => 'required|string|unique:lecturers,nip,' . $id,
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:lecturers,email,' . $id,
-            'phone' => 'required|string|max:15',
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
-            'birth_date' => 'required|date',
+            'department' => 'required|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
+            'nip.required' => 'NIP harus diisi.',
+            'nip.unique' => 'NIP sudah terdaftar.',
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah terdaftar.',
-            'phone.required' => 'Nomor telepon harus diisi.',
             'address.required' => 'Alamat harus diisi.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
-            'birth_date.required' => 'Tanggal lahir harus diisi.',
-            'birth_date.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
+            'department.required' => 'Departemen harus diisi.',
+            'photo.image' => 'File yang diunggah harus berupa gambar.',
+            'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
+            'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
         ]);
 
         $data = [
+            'nip' => $request->nip,
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
             'address' => $request->address,
             'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
+            'department' => $request->department,
         ];
 
         $lecturer = Lecturer::findOrFail($id);
@@ -122,6 +136,17 @@ class LecturerController extends Controller
         $lecturer->update($data);
 
         $changes = [];
+
+        if ($request->hasFile('photo')) {
+            ImageService::deleteImage($lecturer->photo);
+            $photo = ImageService::image_intervention($request->file('photo'), 'uploads/lecturers/', 1 / 1);
+            $lecturer->update(['photo' => $photo]);
+            $changes['photo'] = [
+                'old' => $beforeUpdate['photo'],
+                'new' => $photo,
+            ];
+        }
+
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $beforeUpdate) &&  $beforeUpdate[$key] !== $value) {
                 $changes[$key] = [
@@ -147,6 +172,11 @@ class LecturerController extends Controller
     public function destroy(string $id)
     {
         $lecturer = Lecturer::findOrFail($id);
+
+        if ($lecturer->photo) {
+            ImageService::deleteImage($lecturer->photo);
+        }
+
         $lecturer->delete();
 
         activity()

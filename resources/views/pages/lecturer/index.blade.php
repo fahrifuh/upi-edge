@@ -61,11 +61,11 @@
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>NIP</th>
                                 <th>Nama</th>
                                 <th>Email</th>
-                                <th>No. Telpon</th>
-                                <th>Tanggal Lahir</th>
                                 <th>Jenis Kelamin</th>
+                                <th>Jurusan</th>
                                 <th>Alamat</th>
                                 <th>Aksi</th>
                             </tr>
@@ -74,13 +74,16 @@
                             @foreach ($lecturers as $lecturer)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $lecturer->nip }}</td>
                                     <td>{{ $lecturer->name }}</td>
                                     <td>{{ $lecturer->email }}</td>
-                                    <td>{{ $lecturer->phone }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($lecturer->birth_date)->translatedFormat('d F Y') }}</td>
                                     <td>{{ $lecturer->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
+                                    <td>{{ $lecturer->department }}</td>
                                     <td>{{ $lecturer->address }}</td>
                                     <td class="flex space-x-2 items-center">
+                                        <a href="{{ route('lecturer.show', $lecturer->id) }}">
+                                            <i class="fa fa-circle-info text-green-500"></i>
+                                        </a>
                                         <a href="{{ route('lecturer.edit', $lecturer->id) }}">
                                             <i class="fa fa-pen text-blue-500"></i>
                                         </a>
