@@ -169,7 +169,7 @@
                         }
                     },
                     columnDefs: [{
-                        targets: [3, 5, 6, 7],
+                        targets: [7],
                         orderable: false
                     }, {
                         targets: [0, 7],
