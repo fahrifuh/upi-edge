@@ -60,6 +60,17 @@
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a href="{{ route('rsc-data.index') }}" class="menu-link">
+                        <i @class([
+                            'menu-icon',
+                            'active-icon' => request()->routeIs('rsc-data.*'),
+                            'fa-solid',
+                            'fa-vial',
+                        ])></i>
+                        <div class="text-slate-500">Data Rapid Soil Checker (RSC)</div>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a href="{{ route('profile.edit') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
