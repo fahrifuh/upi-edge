@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ActivityScheduleController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RSCDataController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +41,22 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'student.destroy',
     ]);
 
+    Route::resource('activity-schedule', ActivityScheduleController::class)->except('show')->names([
+        'index' => 'activity-schedule.index',
+        'create' => 'activity-schedule.create',
+        'store' => 'activity-schedule.store',
+        'edit' => 'activity-schedule.edit',
+        'update' => 'activity-schedule.update',
+        'destroy' => 'activity-schedule.destroy',
+    ]);
+
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+    Route::prefix('/rsc-data')->name('rsc-data.')->group(function () {
+        Route::get('/', [RSCDataController::class, 'index'])->name('index');
+        Route::get('/monitoring', [RSCDataController::class, 'indexMonitoring'])->name('monitoring.index');
+        Route::get('/schedule', [RSCDataController::class, 'indexPenjadwalan'])->name('schedule.index');
+        Route::get('/schedule/show/{id}', [RSCDataController::class, 'showPenjadwalan'])->name('schedule.show');
+    });
 });
 
 require __DIR__ . '/auth.php';

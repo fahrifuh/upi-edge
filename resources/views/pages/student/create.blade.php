@@ -15,9 +15,15 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="p-6">
                     <h1 class="text-3xl font-extrabold mb-4">Tambah Data Mahasiswa</h1>
-                    <form action="{{ route('student.store') }}" method="POST">
+                    <form action="{{ route('student.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="photo">{{ __('Foto') }}</x-input-label>
+                                <input id="photo" class="block mt-1 w-full border-2" type="file" name="photo"
+                                    accept="image/*" required>
+                                <x-input-error :messages="$errors->get('photo')" class="mt-2" />
+                            </div>
                             <div>
                                 <x-input-label for="name">{{ __('Nama') }}</x-input-label>
                                 <x-text-input id="name" class="block mt-1 w-full rounded-xl" type="text"
@@ -29,24 +35,6 @@
                                 <x-text-input id="nim" class="block mt-1 w-full rounded-xl" type="text"
                                     name="nim" :value="old('nim')" required autofocus autocomplete="name" />
                                 <x-input-error :messages="$errors->get('nim')" class="mt-2" />
-                            </div>
-                            <div>
-                                <x-input-label for="email">{{ __('Email') }}</x-input-label>
-                                <x-text-input id="email" class="block mt-1 w-full rounded-xl" type="email"
-                                    name="email" :value="old('email')" required autofocus autocomplete="email" />
-                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                            </div>
-                            <div>
-                                <x-input-label for="phone">{{ __('Nomor Telepon') }}</x-input-label>
-                                <x-text-input id="phone" class="block mt-1 w-full rounded-xl" type="tel"
-                                    name="phone" :value="old('phone')" required autofocus autocomplete="phone" />
-                                <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-                            </div>
-                            <div>
-                                <x-input-label for="birth_date">{{ __('Tanggal Lahir') }}</x-input-label>
-                                <x-text-input id="birth_date" class="block mt-1 w-full rounded-xl" type="date"
-                                    name="birth_date" :value="old('birth_date')" required autofocus autocomplete="birth_date" />
-                                <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="gender">{{ __('Jenis Kelamin') }}</x-input-label>
@@ -63,9 +51,28 @@
 
                                 <x-input-error :messages="$errors->get('gender')" class="mt-2" />
                             </div>
-                            <div class="col-span-2">
+                            <div>
+                                <x-input-label for="email">{{ __('Email') }}</x-input-label>
+                                <x-text-input id="email" class="block mt-1 w-full rounded-xl" type="email"
+                                    name="email" :value="old('email')" required autofocus autocomplete="email" />
+                                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="major">{{ __('Jurusan') }}</x-input-label>
+                                <x-text-input id="major" class="block mt-1 w-full rounded-xl" type="text"
+                                    name="major" :value="old('major')" required autofocus autocomplete="major" />
+                                <x-input-error :messages="$errors->get('major')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="semester">{{ __('Semester') }}</x-input-label>
+                                <x-text-input id="semester" class="block mt-1 w-full rounded-xl" type="number"
+                                    min="1" name="semester" :value="old('semester')" required autofocus
+                                    autocomplete="semester" />
+                                <x-input-error :messages="$errors->get('semester')" class="mt-2" />
+                            </div>
+                            <div>
                                 <x-input-label for="address">{{ __('Alamat') }}</x-input-label>
-                                <textarea id="address" class="block mt-1 w-full rounded-xl" name="address" rows="3" required>{{ old('address') }}</textarea>
+                                <textarea id="address" class="block mt-1 w-full rounded-xl" name="address" rows="5" required>{{ old('address') }}</textarea>
                                 <x-input-error :messages="$errors->get('address')" class="mt-2" />
                             </div>
                             <div class="col-span-2 text-right">

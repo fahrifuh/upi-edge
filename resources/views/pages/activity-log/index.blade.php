@@ -23,7 +23,7 @@
                                     <th>No</th>
                                     <th>Waktu</th>
                                     <th>User</th>
-                                    <th>Kategori</th>
+                                    <th>Aksi</th>
                                     <th>Deskripsi</th>
                                 </tr>
                             </thead>

@@ -44,7 +44,7 @@
     @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Data Mahasiswa') }}
+            {{ __('Jadwal Kegiatan Praktikum') }}
         </h2>
     </x-slot>
 
@@ -52,46 +52,71 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
-                    <h1 class="text-3xl font-extrabold text-start">Tabel Data Mahasiswa</h1>
-                    <a href="{{ route('student.create') }}"
+                    <h1 class="text-3xl font-extrabold text-start">Tabel Jadwal Kegiatan Praktikum</h1>
+                    <a href="{{ route('activity-schedule.create') }}"
                         class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
                 </div>
                 <div class="overflow-x-scroll">
-                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="student-table">
+                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="activity-schedule-table">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>NIM</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Jurusan</th>
-                                <th>Semester</th>
-                                <th>Alamat</th>
+                                <th>Hari</th>
+                                <th>Tanggal</th>
+                                <th>Waktu Mulai</th>
+                                <th>Waktu Selesai</th>
+                                <th>Jumlah Dosen</th>
+                                <th>Jumlah Mahasiswa</th>
+                                <th>Agenda</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($students as $student)
+                            @foreach ($activitySchedules as $activitySchedule)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $student->nim }}</td>
-                                    <td>{{ $student->name }}</td>
-                                    <td>{{ $student->email }}</td>
-                                    <td>{{ $student->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
-                                    <td>{{ $student->major }}</td>
-                                    <td>{{ $student->semester }}</td>
-                                    <td>{{ $student->address }}</td>
+                                    <td>{{ $activitySchedule->day }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($activitySchedule->date)->translatedFormat('d F Y') }}
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::parse($activitySchedule->start_time)->format('H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($activitySchedule->end_time)->format('H:i') }}</td>
+                                    <td>{{ $activitySchedule->lecturers_count }} <button class="ml-2"
+                                            onclick="toggleDetails('lecturers', {{ $activitySchedule->id }})"><i
+                                                class="fa-solid fa-caret-down text-green-500"
+                                                id="icon-lecturers-{{ $activitySchedule->id }}"></i></button>
+                                        <div id="lecturers-{{ $activitySchedule->id }}" class="hidden text-sm mt-2">
+                                            <strong>Daftar Dosen:</strong>
+                                            <ul class="list-disc list-inside">
+                                                @foreach ($activitySchedule->lecturers as $lecturer)
+                                                    <li>{{ $lecturer->name }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td>{{ $activitySchedule->students_count }} <button class="ml-2"
+                                            onclick="toggleDetails('students', {{ $activitySchedule->id }})"><i
+                                                class="fa-solid fa-caret-down text-green-500"
+                                                id="icon-students-{{ $activitySchedule->id }}"></i></button>
+                                        <div id="students-{{ $activitySchedule->id }}" class="hidden text-sm mt-2">
+                                            <strong>Daftar Mahasiswa:</strong>
+                                            <ul class="list-disc list-inside">
+                                                @foreach ($activitySchedule->students as $student)
+                                                    <li>{{ $student->name }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td>{{ $activitySchedule->agenda }}</td>
                                     <td class="h-full">
                                         <div class="flex items-center gap-2 h-full">
-                                            <a href="{{ route('student.show', $student->id) }}" class="h-100">
-                                                <i class="fa fa-circle-info text-green-500"></i>
-                                            </a>
-                                            <a href="{{ route('student.edit', $student->id) }}" class="h-100">
+                                            <a href="{{ route('activity-schedule.edit', $activitySchedule->id) }}"
+                                                class="h-100">
                                                 <i class="fa fa-pen text-blue-500"></i>
                                             </a>
-                                            <form action="{{ route('student.destroy', $student->id) }}" method="POST"
-                                                class="delete-form" data-nama="{{ $student->name }}">
+                                            <form
+                                                action="{{ route('activity-schedule.destroy', $activitySchedule->id) }}"
+                                                method="POST" class="delete-form"
+                                                data-nama="{{ $activitySchedule->agenda }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit">
@@ -121,7 +146,7 @@
                 const seconds = now.getSeconds().toString().padStart(2, '0');
                 const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
 
-                $('#student-table').DataTable({
+                $('#activity-schedule-table').DataTable({
                     responsive: true,
                     pageLength: 10,
                     search: {
@@ -133,7 +158,7 @@
                             text: 'Export CSV',
                             title: 'Data Mahasiswa',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `data_mahasiswa_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
@@ -143,7 +168,7 @@
                             text: 'Export Excel',
                             title: 'Data Mahasiswa',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `data_mahasiswa_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
@@ -153,7 +178,7 @@
                             text: 'Export PDF',
                             title: 'Data Mahasiswa',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `data_mahasiswa_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
@@ -162,10 +187,10 @@
                     language: {
                         search: "Cari:",
                         lengthMenu: "Tampilkan _MENU_ entri",
-                        emptyTable: "Tidak ada data mahasiswa yang tersedia",
+                        emptyTable: "Tidak ada data agenda yang tersedia",
                         info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                        infoEmpty: "Tidak ada data mahasiswa yang dapat ditampilkan.",
-                        zeroRecords: "Data mahasiswa tidak ditemukan.",
+                        infoEmpty: "Tidak ada data agenda yang dapat ditampilkan.",
+                        zeroRecords: "Data agenda tidak ditemukan.",
                         infoFiltered: "(difilter dari _MAX_ total entri)",
                         paginate: {
                             previous: "<",
@@ -173,10 +198,10 @@
                         }
                     },
                     columnDefs: [{
-                        targets: [8],
+                        targets: [5, 6, 8],
                         orderable: false
                     }, {
-                        targets: [0, 8],
+                        targets: [0, 5, 6, 8],
                         searchable: false
                     }],
                 });
@@ -196,10 +221,10 @@
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
 
-                    const studentName = this.getAttribute('data-nama');
+                    const activityScheduleName = this.getAttribute('data-nama');
                     Swal.fire({
                         title: 'Konfirmasi',
-                        text: `Apakah Anda yakin ingin menghapus data mahasiswa bernama ${studentName}?`,
+                        text: `Apakah Anda yakin ingin menghapus data agenda ${activityScheduleName}?`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, Hapus!',
@@ -210,7 +235,24 @@
                         }
                     });
                 })
+
+
             });
+
+            function toggleDetails(type, id) {
+                const content = document.getElementById(`${type}-${id}`);
+                const icon = document.getElementById(`icon-${type}-${id}`);
+
+                content.classList.toggle('hidden');
+
+                if (content.classList.contains('hidden')) {
+                    icon.classList.remove('fa-caret-up');
+                    icon.classList.add('fa-caret-down');
+                } else {
+                    icon.classList.remove('fa-caret-down');
+                    icon.classList.add('fa-caret-up');
+                }
+            }
         </script>
     @endpush
 </x-app-layout>
