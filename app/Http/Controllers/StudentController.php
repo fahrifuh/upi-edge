@@ -84,7 +84,8 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $student = Student::with('activitySchedules')->findOrFail($id);
+        return view('pages.student.show', compact('student'));
     }
 
     /**
