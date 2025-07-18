@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [RSCDataController::class, 'index'])->name('index');
         Route::get('/monitoring', [RSCDataController::class, 'indexMonitoring'])->name('monitoring.index');
         Route::get('/schedule', [RSCDataController::class, 'indexPenjadwalan'])->name('schedule.index');
+        Route::get('/schedule/show/{id}', [RSCDataController::class, 'showPenjadwalan'])->name('schedule.show');
     });
 });
 
