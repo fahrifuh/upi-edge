@@ -83,7 +83,8 @@ class LecturerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $lecturer = Lecturer::with('activitySchedules')->findOrFail($id);
+        return view('pages.lecturer.show', compact('lecturer'));
     }
 
     /**
