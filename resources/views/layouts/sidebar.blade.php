@@ -49,6 +49,17 @@
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a href="{{ route('device.index') }}" class="menu-link">
+                        <i @class([
+                            'menu-icon',
+                            'active-icon' => request()->routeIs('device.*'),
+                            'fa-solid',
+                            'fa-satellite-dish',
+                        ])></i>
+                        <div class="text-slate-500">Data Perangkat</div>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a href="{{ route('activity-schedule.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
