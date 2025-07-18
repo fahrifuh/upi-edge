@@ -8,9 +8,9 @@
         <h2 class="leading-tight">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <a href="{{ route('activity-schedule.index') }}">Jadwal Kegiatan</a>
+                    <a href="{{ route('activity-schedule.index') }}">Jadwal Kegiatan Praktikum</a>
                 </li>
-                <li class="breadcrumb-item breadcrumb-active">{{ __('Tambah Jadwal Kegiatan') }}</li>
+                <li class="breadcrumb-item breadcrumb-active">{{ __('Tambah Jadwal Kegiatan Praktikum') }}</li>
             </ol>
         </h2>
     </x-slot>
@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="p-6">
-                    <h1 class="text-3xl font-extrabold mb-4">Tambah Jadwal Kegiatan</h1>
+                    <h1 class="text-3xl font-extrabold mb-4">Tambah Jadwal Kegiatan Praktikum</h1>
                     <form action="{{ route('activity-schedule.store') }}" method="POST">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

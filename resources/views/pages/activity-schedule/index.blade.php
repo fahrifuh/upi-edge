@@ -44,7 +44,7 @@
     @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Jadwal Kegiatan') }}
+            {{ __('Jadwal Kegiatan Praktikum') }}
         </h2>
     </x-slot>
 
@@ -52,7 +52,7 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
-                    <h1 class="text-3xl font-extrabold text-start">Tabel Jadwal Kegiatan</h1>
+                    <h1 class="text-3xl font-extrabold text-start">Tabel Jadwal Kegiatan Praktikum</h1>
                     <a href="{{ route('activity-schedule.create') }}"
                         class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
                 </div>
@@ -158,7 +158,7 @@
                             text: 'Export CSV',
                             title: 'Data Mahasiswa',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `jadwal_kegiatan_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
@@ -168,7 +168,7 @@
                             text: 'Export Excel',
                             title: 'Data Mahasiswa',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `jadwal_kegiatan_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }
@@ -178,7 +178,7 @@
                             text: 'Export PDF',
                             title: 'Data Mahasiswa',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `jadwal_kegiatan_${formattedTimestamp}`,
+                            filename: `jadwal_kegiatan_praktikum_${formattedTimestamp}`,
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
                             }

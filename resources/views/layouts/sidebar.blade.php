@@ -56,7 +56,7 @@
                             'fa-solid',
                             'fa-calendar-days',
                         ])></i>
-                        <div class="text-slate-500">Jadwal Kegiatan</div>
+                        <div class="text-slate-500">Jadwal Kegiatan Praktikum</div>
                     </a>
                 </li>
                 <li class="menu-item">
