@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ActivityScheduleController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
@@ -48,6 +49,16 @@ Route::middleware('auth')->group(function () {
         'edit' => 'activity-schedule.edit',
         'update' => 'activity-schedule.update',
         'destroy' => 'activity-schedule.destroy',
+    ]);
+
+    Route::resource('device', DeviceController::class)->names([
+        'index' => 'device.index',
+        'create' => 'device.create',
+        'store' => 'device.store',
+        'show' => 'device.show',
+        'edit' => 'device.edit',
+        'update' => 'device.update',
+        'destroy' => 'device.destroy',
     ]);
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
