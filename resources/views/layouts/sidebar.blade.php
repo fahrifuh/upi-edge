@@ -75,10 +75,10 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('profile.edit') }}" class="menu-link">
+                    <a href="{{ route('application-settings.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
-                            'active-icon' => request()->routeIs('profile.*'),
+                            'active-icon' => request()->routeIs('application-settings.*'),
                             'fa-solid',
                             'fa-gear',
                         ])></i>
