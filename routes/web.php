@@ -22,6 +22,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/master-data', function () {
+        return view('pages.master-data.index');
+    })->name('master-data.index');
+
     Route::resource('lecturers', LecturerController::class)->names([
         'index' => 'lecturer.index',
         'create' => 'lecturer.create',
