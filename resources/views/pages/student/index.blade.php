@@ -43,8 +43,13 @@
         </style>
     @endpush
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Data Mahasiswa') }}
+        <h2 class="leading-tight">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('master-data.index') }}">Data Master</a>
+                </li>
+                <li class="breadcrumb-item breadcrumb-active">{{ __('Data Mahasiswa') }}</li>
+            </ol>
         </h2>
     </x-slot>
 
