@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ActivityScheduleController;
+use App\Http\Controllers\ApplicationSettingController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
@@ -25,6 +26,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/master-data', function () {
         return view('pages.master-data.index');
     })->name('master-data.index');
+
+    Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
+    Route::post('/application-setting', [ApplicationSettingController::class, 'save'])->name('application-setting.save');
 
     Route::resource('lecturers', LecturerController::class)->names([
         'index' => 'lecturer.index',
