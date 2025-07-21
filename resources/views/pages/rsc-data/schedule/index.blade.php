@@ -41,10 +41,12 @@
                             <div class="mt-2 font-semibold {{ $color }}">
                                 {{ $status }}
                             </div>
-                            <a href="{{ route('rsc-data.schedule.show', $schedule->id) }}"
-                                class="inline-block mt-3 ms-auto px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-700">
-                                Lihat Data
-                            </a>
+                            @if ($status != 'Belum Mulai')
+                                <a href="{{ route('rsc-data.schedule.show', $schedule->id) }}"
+                                    class="inline-block mt-3 ms-auto px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-700">
+                                    Lihat Data
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endforeach
