@@ -13,6 +13,9 @@
         <h2 class="leading-tight">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
+                    <a href="{{ route('master-data.index') }}">Data Master</a>
+                </li>
+                <li class="breadcrumb-item">
                     <a href="{{ route('device.index') }}">Data Perangkat</a>
                 </li>
                 <li class="breadcrumb-item breadcrumb-active">{{ __('Ubah Perangkat') }}</li>
