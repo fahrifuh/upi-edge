@@ -46,7 +46,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="min-h-[75vh]">
                 {{ $slot }}
             </main>
 
