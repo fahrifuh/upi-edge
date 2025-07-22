@@ -46,9 +46,12 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="min-h-[75vh]">
                 {{ $slot }}
             </main>
+
+            <!-- Footer -->
+            <footer class="px-6 py-1 font-normal text-base text-slate-400" id="footer"></footer>
         </div>
     </div>
 
@@ -90,6 +93,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script>
+        const getApplicationSettings = async () => {
+            const response = await fetch('/api/application-settings');
+            const data = await response.json();
+
+            const footer = document.getElementById('footer');
+            const appLogo = document.getElementById('app-logo');
+            const menuFooter = document.getElementById('menu-footer');
+            const imgUrl = `/${data.image}`;
+            const fallbackImg = '/images/logo-upi-horizontal.png';
+
+            const img = new Image();
+            img.src = imgUrl;
+            img.onload = () => {
+                appLogo.innerHTML = `<img src="${imgUrl}" alt="Logo" class="object-cover">`;
+            };
+            img.onerror = () => {
+                appLogo.innerHTML = `<img src="${fallbackImg}" alt="Logo" class="object-cover">`;
+            };
+
+            menuFooter.textContent = `Versi ${data.version}`;
+            footer.textContent = `Copyright © ${data.copyright_year} ${data.copyright}. All Right Reserved.`;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
             const day = now.toLocaleString('id-ID', {
@@ -105,6 +131,8 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('time-current').textContent = `${hours}:${minutes}`;
             document.getElementById('date-current').textContent = `${day}, ${date}`;
+
+            getApplicationSettings();
         });
     </script>
     @stack('scripts')

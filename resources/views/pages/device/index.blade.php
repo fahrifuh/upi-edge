@@ -48,7 +48,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('master-data.index') }}">Data Master</a>
                 </li>
-                <li class="breadcrumb-item breadcrumb-active">{{ __('Data Dosen') }}</li>
+                <li class="breadcrumb-item breadcrumb-active">{{ __('Data Perangkat') }}</li>
             </ol>
         </h2>
     </x-slot>
@@ -57,43 +57,40 @@
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
-                    <h1 class="text-3xl font-extrabold text-start">Tabel Data Dosen</h1>
-                    <a href="{{ route('lecturer.create') }}"
+                    <h1 class="text-3xl font-extrabold text-start">Tabel Data Perangkat</h1>
+                    <a href="{{ route('device.create') }}"
                         class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
                 </div>
                 <div class="overflow-x-scroll">
-                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="lecturer-table">
+                    <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="device-table">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>NIP</th>
+                                <th>Series</th>
                                 <th>Nama</th>
-                                <th>Email</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Jurusan</th>
-                                <th>Alamat</th>
+                                <th>Tanggal Pemasangan</th>
+                                <th>Tipe Koneksi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lecturers as $lecturer)
+                            @foreach ($devices as $device)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $lecturer->nip }}</td>
-                                    <td>{{ $lecturer->name }}</td>
-                                    <td>{{ $lecturer->email }}</td>
-                                    <td>{{ $lecturer->gender == 'l' ? 'Pria' : 'Wanita' }}</td>
-                                    <td>{{ $lecturer->department }}</td>
-                                    <td>{{ $lecturer->address }}</td>
+                                    <td>{{ $device->series }}</td>
+                                    <td>{{ $device->name }}</td>
+                                    <td>{{ $device->installation_date }}</td>
+                                    <td>{{ $device->tipe_koneksi == 'wifi' ? 'WiFi' : ($device->tipe_koneksi == 'lora' ? 'LoRa' : 'GSM') }}
+                                    </td>
                                     <td class="flex space-x-2 items-center">
-                                        <a href="{{ route('lecturer.show', $lecturer->id) }}">
+                                        <a href="{{ route('device.show', $device->id) }}">
                                             <i class="fa fa-circle-info text-green-500"></i>
                                         </a>
-                                        <a href="{{ route('lecturer.edit', $lecturer->id) }}">
+                                        <a href="{{ route('device.edit', $device->id) }}">
                                             <i class="fa fa-pen text-blue-500"></i>
                                         </a>
-                                        <form action="{{ route('lecturer.destroy', $lecturer->id) }}" method="POST"
-                                            class="delete-form" data-nama="{{ $lecturer->name }}">
+                                        <form action="{{ route('device.destroy', $device->id) }}" method="POST"
+                                            class="delete-form" data-series="{{ $device->series }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit">
@@ -122,7 +119,7 @@
                 const seconds = now.getSeconds().toString().padStart(2, '0');
                 const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
 
-                $('#lecturer-table').DataTable({
+                $('#device-table').DataTable({
                     responsive: true,
                     pageLength: 10,
                     search: {
@@ -132,41 +129,41 @@
                     buttons: [{
                             extend: 'csv',
                             text: 'Export CSV',
-                            title: 'Data Dosen',
+                            title: 'Data Perangkat',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_perangkat_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4]
                             }
                         },
                         {
                             extend: 'excel',
                             text: 'Export Excel',
-                            title: 'Data Dosen',
+                            title: 'Data Perangkat',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_perangkat_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4]
                             }
                         },
                         {
                             extend: 'pdf',
                             text: 'Export PDF',
-                            title: 'Data Dosen',
+                            title: 'Data Perangkat',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `data_dosen_${formattedTimestamp}`,
+                            filename: `data_perangkat_${formattedTimestamp}`,
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6]
+                                columns: [0, 1, 2, 3, 4]
                             }
                         },
                     ],
                     language: {
                         search: "Cari:",
                         lengthMenu: "Tampilkan _MENU_ entri",
-                        emptyTable: "Tidak ada data dosen yang tersedia",
+                        emptyTable: "Tidak ada data perangkat yang tersedia",
                         info: "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                        infoEmpty: "Tidak ada data dosen yang dapat ditampilkan.",
-                        zeroRecords: "Data dosen tidak ditemukan.",
+                        infoEmpty: "Tidak ada data perangkat yang dapat ditampilkan.",
+                        zeroRecords: "Data perangkat tidak ditemukan.",
                         infoFiltered: "(difilter dari _MAX_ total entri)",
                         paginate: {
                             previous: "<",
@@ -174,10 +171,10 @@
                         }
                     },
                     columnDefs: [{
-                        targets: [7],
+                        targets: [5],
                         orderable: false
                     }, {
-                        targets: [0, 7],
+                        targets: [0, 5],
                         searchable: false
                     }],
                 });
@@ -197,10 +194,10 @@
                 form.addEventListener('submit', function(event) {
                     event.preventDefault();
 
-                    const lecturerName = this.getAttribute('data-nama');
+                    const deviceSeries = this.getAttribute('data-series');
                     Swal.fire({
                         title: 'Konfirmasi',
-                        text: `Apakah Anda yakin ingin menghapus data dosen bernama ${lecturerName}?`,
+                        text: `Apakah Anda yakin ingin menghapus data perangkat ${deviceSeries}?`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, Hapus!',

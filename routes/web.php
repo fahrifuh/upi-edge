@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ActivityScheduleController;
+use App\Http\Controllers\ApplicationSettingController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
@@ -12,14 +15,19 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('pages.dashboard.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/master-data', function () {
+        return view('pages.master-data.index');
+    })->name('master-data.index');
+
+    Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
+    Route::post('/application-setting', [ApplicationSettingController::class, 'save'])->name('application-setting.save');
 
     Route::resource('lecturers', LecturerController::class)->names([
         'index' => 'lecturer.index',
@@ -48,6 +56,16 @@ Route::middleware('auth')->group(function () {
         'edit' => 'activity-schedule.edit',
         'update' => 'activity-schedule.update',
         'destroy' => 'activity-schedule.destroy',
+    ]);
+
+    Route::resource('device', DeviceController::class)->names([
+        'index' => 'device.index',
+        'create' => 'device.create',
+        'store' => 'device.store',
+        'show' => 'device.show',
+        'edit' => 'device.edit',
+        'update' => 'device.update',
+        'destroy' => 'device.destroy',
     ]);
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');

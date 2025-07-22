@@ -3,6 +3,9 @@
         <h2 class="leading-tight">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
+                    <a href="{{ route('master-data.index') }}">Data Master</a>
+                </li>
+                <li class="breadcrumb-item">
                     <a href="{{ route('student.index') }}">Data Mahasiswa</a>
                 </li>
                 <li class="breadcrumb-item breadcrumb-active">{{ __('Ubah Data Mahasiswa') }}</li>

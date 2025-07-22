@@ -15,7 +15,7 @@ class ActivityScheduleController extends Controller
      */
     public function index()
     {
-        $activitySchedules = ActivitySchedule::withCount('students', 'lecturers')->get();
+        $activitySchedules = ActivitySchedule::with('students', 'lecturers')->withCount('students', 'lecturers')->get();
         return view('pages.activity-schedule.index', compact('activitySchedules'));
     }
 

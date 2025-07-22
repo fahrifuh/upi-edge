@@ -26,18 +26,18 @@
                     </div>
                 </div>
                 <div class="overflow-x-scroll">
-                    <table class="w-full align-middle border-slate-400 table mb-0">
+                    <table class="w-full align-middle border-slate-400 table mb-0 px-2" id="fix-station-table">
                         <thead>
                             <tr>
-                                <th>Waktu</th>
-                                <th>ID Perangkat</th>
-                                <th>Nitrogen</th>
-                                <th>Fosfor</th>
-                                <th>Kalium</th>
-                                <th>EC</th>
-                                <th>pH Tanah</th>
-                                <th>Suhu Tanah</th>
-                                <th>Kelembapan Tanah</th>
+                                <th class="dt-center">Waktu</th>
+                                <th class="dt-center">ID Perangkat</th>
+                                <th class="dt-center">Nitrogen</th>
+                                <th class="dt-center">Fosfor</th>
+                                <th class="dt-center">Kalium</th>
+                                <th class="dt-center">EC</th>
+                                <th class="dt-center">pH Tanah</th>
+                                <th class="dt-center">Suhu Tanah</th>
+                                <th class="dt-center">Kelembapan Tanah</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="fix-station-tbody">
@@ -45,13 +45,13 @@
                                 <tr>
                                     <td>{{ $item->created_at }}</td>
                                     <td>{{ $item->device_id }}</td>
-                                    <td>{{ $item->samples->Nitrogen }}</td>
-                                    <td>{{ $item->samples->Phosporus }}</td>
-                                    <td>{{ $item->samples->Kalium }}</td>
-                                    <td>{{ $item->samples->Ec }}</td>
+                                    <td>{{ $item->samples->Nitrogen }} mg/kg</td>
+                                    <td>{{ $item->samples->Phosporus }} mg/kg</td>
+                                    <td>{{ $item->samples->Kalium }} mg/kg</td>
+                                    <td>{{ $item->samples->Ec }} uS/cm</td>
                                     <td>{{ $item->samples->Ph }}</td>
-                                    <td>{{ $item->samples->Temperature }}</td>
-                                    <td>{{ $item->samples->Humidity }}</td>
+                                    <td>{{ $item->samples->Temperature }} &deg;C</td>
+                                    <td>{{ $item->samples->Humidity }} %</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -68,6 +68,36 @@
     @push('scripts')
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
+            // DataTable (using jQuery)
+            $(document).ready(function() {
+                const now = new Date();
+                const date = now.getDate().toString().padStart(2, '0');
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const year = now.getFullYear();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
+
+                $('#fix-station-table').DataTable({
+                    responsive: true,
+                    ordering: false,
+                    dom: '<"ms-5 mb-2"B>rt',
+                    buttons: [{
+                        extend: 'excel',
+                        text: 'Export Excel',
+                        title: 'Data Telemetri Rapid Soil Checker',
+                        className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
+                        filename: `data_telemetri_rsc_${formattedTimestamp}`,
+                    }],
+                    columnDefs: [{
+                        className: "text-center",
+                        targets: "_all"
+                    }]
+                });
+            });
+
+
             // Enable pusher logging - don't include this in production
             const formatTimestamp = (timestamp) => {
                 return new Date(timestamp).toLocaleString('sv-SE');

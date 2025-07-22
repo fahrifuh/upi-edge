@@ -27,25 +27,18 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('lecturer.index') }}" class="menu-link">
+                    <a href="{{ route('master-data.index') }}" class="menu-link">
                         <i @class([
                             'menu-icon',
-                            'active-icon' => request()->routeIs('lecturer.*'),
+                            'active-icon' => request()->routeIs(
+                                'master-data.*',
+                                'lecturer.*',
+                                'student.*',
+                                'device.*'),
                             'fa-solid',
-                            'fa-chalkboard-user',
+                            'fa-database',
                         ])></i>
-                        <div class="text-slate-500">Data Dosen</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="{{ route('student.index') }}" class="menu-link">
-                        <i @class([
-                            'menu-icon',
-                            'active-icon' => request()->routeIs('student.*'),
-                            'fa-solid',
-                            'fa-user-graduate',
-                        ])></i>
-                        <div class="text-slate-500">Data Mahasiswa</div>
+                        <div class="text-slate-500">Data Master</div>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -79,6 +72,17 @@
                             'fa-id-badge',
                         ])></i>
                         <div class="text-slate-500">Pengaturan Akun</div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('application-setting.index') }}" class="menu-link">
+                        <i @class([
+                            'menu-icon',
+                            'active-icon' => request()->routeIs('application-setting.*'),
+                            'fa-solid',
+                            'fa-gear',
+                        ])></i>
+                        <div class="text-slate-500">Pengaturan Aplikasi</div>
                     </a>
                 </li>
                 <li class="menu-item">
