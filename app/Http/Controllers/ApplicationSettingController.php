@@ -30,7 +30,8 @@ class ApplicationSettingController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $imgPath = ImageService::image_intervention($request->file('image'), 'application-settings/');
+            ImageService::deleteImage($setting->image);
+            $imgPath = ImageService::image_intervention($request->file('image'), 'uploads/application-settings/');
             $setting->image = $imgPath;
         }
 
