@@ -63,8 +63,8 @@
                         </div>
                         <div>
                             <h3>Terakhir diupdate: <span
-                                    id="datetime-newest-data">{{ \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') }}</span>
-                            </h3>
+                                    id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
+                            </h3>   
                         </div>
                     </div>
                 </div>
