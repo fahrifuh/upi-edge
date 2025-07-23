@@ -68,8 +68,8 @@
     @push('scripts')
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
-            // DataTable (using jQuery)
-            $(document).ready(function() {
+            // Get current timestamp for filename
+            const timestamp = () => {
                 const now = new Date();
                 const date = now.getDate().toString().padStart(2, '0');
                 const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -77,8 +77,12 @@
                 const hours = now.getHours().toString().padStart(2, '0');
                 const minutes = now.getMinutes().toString().padStart(2, '0');
                 const seconds = now.getSeconds().toString().padStart(2, '0');
-                const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
 
+                return `${year}${month}${date}_${hours}${minutes}${seconds}`;
+            }
+
+            // DataTable (using jQuery)
+            $(document).ready(function() {
                 $('#fix-station-table').DataTable({
                     responsive: true,
                     ordering: false,
@@ -88,7 +92,9 @@
                         text: 'Export Excel',
                         title: 'Data Telemetri Rapid Soil Checker',
                         className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                        filename: `data_telemetri_rsc_${formattedTimestamp}`,
+                        filename: function() {
+                            return `data_telemetri_rsc_${timestamp()}`;
+                        }
                     }],
                     columnDefs: [{
                         className: "text-center",
