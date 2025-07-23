@@ -1,4 +1,47 @@
 <x-app-layout>
+    @push('styles')
+        <style>
+            .dataTables_wrapper .dataTables_info {
+                padding: 0.25rem 0.75rem !important;
+                margin: 1rem 0.25rem !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 0.25rem 0.75rem !important;
+                margin: 1rem 0.25rem !important;
+                border: 1px solid #d1d5db !important;
+                /* gray-300 */
+                border-radius: 0.5rem !important;
+                /* rounded-md */
+                font-size: 1rem !important;
+                /* text-sm */
+                color: #374151;
+                /* gray-700 */
+                background-color: #ffffff !important;
+                /* white */
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background-color: #f3f4f6 !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+                background-color: #EF4444 !important;
+                /* blue-600 */
+                color: #ffffff !important;
+                /* white */
+                font-weight: 600 !important;
+                /* font-semibold */
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+                background-color: #DC2626 !important;
+                /* blue-600 */
+                color: #ffffff !important;
+                /* white */
+            }
+        </style>
+    @endpush
     <x-slot name="header">
         <h2 class="leading-tight">
             <ol class="breadcrumb">
@@ -82,11 +125,12 @@
             }
 
             // DataTable (using jQuery)
+            let table;
             $(document).ready(function() {
-                $('#fix-station-table').DataTable({
+                table = $('#fix-station-table').DataTable({
                     responsive: true,
                     ordering: false,
-                    dom: '<"ms-5 mb-2"B>rt',
+                    dom: '<"ms-5 mb-2"B>rtp',
                     buttons: [{
                         extend: 'excel',
                         text: 'Export Excel',
@@ -118,21 +162,21 @@
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
                 const data = p.data;
-                const row = document.createElement("tr");
+                const newRow = table.row.add([
+                    formatTimestamp(data.created_at),
+                    data.device_id,
+                    `${data.samples.Nitrogen} mg/kg`,
+                    `${data.samples.Phosporus} mg/kg`,
+                    `${data.samples.Kalium} mg/kg`,
+                    `${data.samples.Ec} uS/cm`,
+                    `${data.samples.Ph}`,
+                    `${data.samples.Temperature} &deg;C`,
+                    `${data.samples.Humidity} %`,
+                ]).draw(false);
 
-                row.innerHTML = `
-                <td>${formatTimestamp(data.created_at)}</td>
-                <td>${data.device_id}</td>
-                <td>${data.samples.Nitrogen}</td>
-                <td>${data.samples.Phosporus}</td>
-                <td>${data.samples.Kalium}</td>
-                <td>${data.samples.Ec}</td>
-                <td>${data.samples.Ph}</td>
-                <td>${data.samples.Temperature}</td>
-                <td>${data.samples.Humidity}</td>
-                `;
-
-                document.getElementById("fix-station-tbody").prepend(row);
+                let newIndex = table.rows().count() - 1;
+                let newNode = table.row(newIndex).node();
+                $(newNode).prependTo('#fix-station-tbody')
             });
         </script>
     @endpush
