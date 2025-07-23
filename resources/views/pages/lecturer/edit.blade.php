@@ -23,7 +23,7 @@
                         @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="photo">{{ __('Foto') }}</x-input-label>
+                                <x-input-label for="photo">{{ __('Foto (Tidak wajib)') }}</x-input-label>
                                 <input id="photo" class="block mt-1 w-full border-2" type="file" name="photo"
                                     accept="image/*">
                                 <x-input-error :messages="$errors->get('photo')" class="mt-2" />

@@ -14,7 +14,7 @@
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="image">{{ __('Foto') }}</x-input-label>
+                                <x-input-label for="image">{{ __('Foto (Tidak wajib)') }}</x-input-label>
                                 <input id="image" class="block mt-1 w-full border-2" type="file" name="image"
                                     accept="image/*">
                                 <x-input-error :messages="$errors->get('image')" class="mt-2" />

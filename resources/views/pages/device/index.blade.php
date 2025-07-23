@@ -109,7 +109,8 @@
 
     @push('scripts')
         <script>
-            $(document).ready(function() {
+            // Get current timestamp for filename
+            const timestamp = () => {
                 const now = new Date();
                 const date = now.getDate().toString().padStart(2, '0');
                 const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -117,8 +118,11 @@
                 const hours = now.getHours().toString().padStart(2, '0');
                 const minutes = now.getMinutes().toString().padStart(2, '0');
                 const seconds = now.getSeconds().toString().padStart(2, '0');
-                const formattedTimestamp = `${year}${month}${date}_${hours}${minutes}${seconds}`;
 
+                return `${year}${month}${date}_${hours}${minutes}${seconds}`;
+            }
+
+            $(document).ready(function() {
                 $('#device-table').DataTable({
                     responsive: true,
                     pageLength: 10,
@@ -131,7 +135,9 @@
                             text: 'Export CSV',
                             title: 'Data Perangkat',
                             className: 'bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600',
-                            filename: `data_perangkat_${formattedTimestamp}`,
+                            filename: function() {
+                                return `data_perangkat_${timestamp()}`;
+                            },
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4]
                             }
@@ -141,7 +147,9 @@
                             text: 'Export Excel',
                             title: 'Data Perangkat',
                             className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
-                            filename: `data_perangkat_${formattedTimestamp}`,
+                            filename: function() {
+                                return `data_perangkat_${timestamp()}`;
+                            },
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4]
                             }
@@ -151,7 +159,9 @@
                             text: 'Export PDF',
                             title: 'Data Perangkat',
                             className: 'bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600',
-                            filename: `data_perangkat_${formattedTimestamp}`,
+                            filename: function() {
+                                return `data_perangkat_${timestamp()}`;
+                            },
                             exportOptions: {
                                 columns: [0, 1, 2, 3, 4]
                             }
