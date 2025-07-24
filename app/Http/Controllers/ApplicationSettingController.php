@@ -48,11 +48,11 @@ class ApplicationSettingController extends Controller
     {
         $setting = ApplicationSetting::first();
         return response()->json([
-            'image' => $setting->image,
-            'name' => $setting->name,
-            'version' => $setting->version,
-            'copyright' => $setting->copyright,
-            'copyright_year' => $setting->copyright_year,
+            'image' => $setting->image ?? null,
+            'name' => $setting->name ?? 'UPI Edge',
+            'version' => $setting->version ?? '1.0',
+            'copyright' => $setting->copyright ?? 'Universitas Pendidikan Indonesia',
+            'copyright_year' => $setting->copyright_year ?? '2025',
         ]);
     }
 }
