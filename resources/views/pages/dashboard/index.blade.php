@@ -63,6 +63,12 @@
                     <div class="w-full">
                         <div id="phChart"></div>
                     </div>
+                    <div class="w-full">
+                        <div id="tempChart"></div>
+                    </div>
+                    <div class="w-full">
+                        <div id="humidChart"></div>
+                    </div>
                 </div>
             </div>
 
@@ -235,6 +241,8 @@
                     'mg/kg')
                 renderAreaChart('#ecChart', 'Grafik data parameter Ec', 'Ec', @json($ec), 'uS/cm')
                 renderAreaChart('#phChart', 'Grafik data parameter Ph', 'Ph', @json($ph))
+                renderAreaChart('#tempChart', 'Grafik data parameter Temperature', 'Temperature', @json($temp), 'Celcius')
+                renderAreaChart('#humidChart', 'Grafik data parameter Humidity', 'Humidity', @json($humid), '%')
             });
         </script>
     @endpush

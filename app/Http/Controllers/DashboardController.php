@@ -59,6 +59,16 @@ class DashboardController extends Controller
             'y' => $d->samples->Ph,
         ]);
 
-        return view('pages.dashboard.index', compact('upcomingActivities', 'lecturers', 'students', 'devices', 'activitySchedules', 'n', 'p', 'k', 'ec', 'ph'));
+        $temp = $telemetryData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Temperature,
+        ]);
+        
+        $humid = $telemetryData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Humidity,
+        ]);
+
+        return view('pages.dashboard.index', compact('upcomingActivities', 'lecturers', 'students', 'devices', 'activitySchedules', 'n', 'p', 'k', 'ec', 'ph', 'temp', 'humid'));
     }
 }
