@@ -1,11 +1,6 @@
 <x-app-layout>
     @push('styles')
         <style>
-            .dataTables_wrapper .dataTables_info {
-                padding: 0.25rem 0.75rem !important;
-                margin: 1rem 0.25rem !important;
-            }
-
             .dataTables_wrapper .dataTables_paginate .paginate_button {
                 padding: 0.25rem 0.75rem !important;
                 margin: 1rem 0.25rem !important;
@@ -64,7 +59,7 @@
                         <div>
                             <h3>Terakhir diupdate: <span
                                     id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
-                            </h3>   
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -84,7 +79,7 @@
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="fix-station-tbody">
-                            @forelse ($data as $item)
+                            @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $item->created_at }}</td>
                                     <td>{{ $item->device_id }}</td>
@@ -96,11 +91,7 @@
                                     <td>{{ $item->samples->Temperature }} &deg;C</td>
                                     <td>{{ $item->samples->Humidity }} %</td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="text-center">Tidak Ada Data</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -143,7 +134,14 @@
                     columnDefs: [{
                         className: "text-center",
                         targets: "_all"
-                    }]
+                    }],
+                    language: {
+                        emptyTable: "Tidak ada data telemetri yang tersedia",
+                        paginate: {
+                            previous: "<",
+                            next: ">"
+                        }
+                    }
                 });
             });
 

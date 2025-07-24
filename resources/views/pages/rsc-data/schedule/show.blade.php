@@ -1,4 +1,42 @@
 <x-app-layout>
+    @push('styles')
+        <style>
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 0.25rem 0.75rem !important;
+                margin: 1rem 0.25rem !important;
+                border: 1px solid #d1d5db !important;
+                /* gray-300 */
+                border-radius: 0.5rem !important;
+                /* rounded-md */
+                font-size: 1rem !important;
+                /* text-sm */
+                color: #374151;
+                /* gray-700 */
+                background-color: #ffffff !important;
+                /* white */
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background-color: #f3f4f6 !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+                background-color: #EF4444 !important;
+                /* blue-600 */
+                color: #ffffff !important;
+                /* white */
+                font-weight: 600 !important;
+                /* font-semibold */
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+                background-color: #DC2626 !important;
+                /* blue-600 */
+                color: #ffffff !important;
+                /* white */
+            }
+        </style>
+    @endpush
     <x-slot name="header">
         <h2 class="leading-tight">
             <ol class="breadcrumb">
@@ -34,19 +72,19 @@
                         <table class="w-full align-middle border-slate-400 table mb-0" id="table-berlangsung">
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
-                                    <th>ID Perangkat</th>
-                                    <th>Nitrogen</th>
-                                    <th>Fosfor</th>
-                                    <th>Kalium</th>
-                                    <th>EC</th>
-                                    <th>pH Tanah</th>
-                                    <th>Suhu Tanah</th>
-                                    <th>Kelembapan Tanah</th>
+                                    <th class="dt-center">Waktu</th>
+                                    <th class="dt-center">ID Perangkat</th>
+                                    <th class="dt-center">Nitrogen</th>
+                                    <th class="dt-center">Fosfor</th>
+                                    <th class="dt-center">Kalium</th>
+                                    <th class="dt-center">EC</th>
+                                    <th class="dt-center">pH Tanah</th>
+                                    <th class="dt-center">Suhu Tanah</th>
+                                    <th class="dt-center">Kelembapan Tanah</th>
                                 </tr>
                             </thead>
                             <tbody class="table-border-bottom-0" id="fix-station-tbody">
-                                @forelse ($data as $item)
+                                @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $item->created_at }}</td>
                                         <td>{{ $item->device_id }}</td>
@@ -58,11 +96,7 @@
                                         <td>{{ $item->samples->Temperature }}</td>
                                         <td>{{ $item->samples->Humidity }}</td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center">Tidak Ada Data</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -71,19 +105,19 @@
                         <table class="w-full align-middle border-slate-400 table mb-0" id="table-selesai">
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
-                                    <th>ID Perangkat</th>
-                                    <th>Nitrogen</th>
-                                    <th>Fosfor</th>
-                                    <th>Kalium</th>
-                                    <th>EC</th>
-                                    <th>pH Tanah</th>
-                                    <th>Suhu Tanah</th>
-                                    <th>Kelembapan Tanah</th>
+                                    <th class="dt-center">Waktu</th>
+                                    <th class="dt-center">ID Perangkat</th>
+                                    <th class="dt-center">Nitrogen</th>
+                                    <th class="dt-center">Fosfor</th>
+                                    <th class="dt-center">Kalium</th>
+                                    <th class="dt-center">EC</th>
+                                    <th class="dt-center">pH Tanah</th>
+                                    <th class="dt-center">Suhu Tanah</th>
+                                    <th class="dt-center">Kelembapan Tanah</th>
                                 </tr>
                             </thead>
                             <tbody class="table-border-bottom-0">
-                                @forelse ($data as $item)
+                                @foreach ($data as $item)
                                     <tr>
                                         <td>{{ $item->created_at }}</td>
                                         <td>{{ $item->device_id }}</td>
@@ -95,11 +129,7 @@
                                         <td>{{ $item->samples->Temperature }}</td>
                                         <td>{{ $item->samples->Humidity }}</td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center">Tidak Ada Data</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -124,6 +154,9 @@
                 return `${year}${month}${date}_${hours}${minutes}${seconds}`;
             }
 
+            const agenda = "{{ $schedule->agenda }}";
+            const datetimeAgenda = "{{ $start->translatedFormat('l, d F Y H:i') . ' - ' . $end->translatedFormat('H:i') }}";
+
             // DataTable (using jQuery)
             let table;
             $(document).ready(function() {
@@ -134,7 +167,9 @@
                     buttons: [{
                         extend: 'excel',
                         text: 'Export Excel',
-                        title: 'Data Telemetri Rapid Soil Checker',
+                        title: function() {
+                            return `Data Telemetri Rapid Soil Checker (${agenda} - ${datetimeAgenda})`;
+                        },
                         className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
                         filename: function() {
                             return `data_telemetri_rsc_${timestamp()}`;
@@ -143,7 +178,14 @@
                     columnDefs: [{
                         className: "text-center",
                         targets: "_all"
-                    }]
+                    }],
+                    language: {
+                        emptyTable: "Tidak ada data telemetri yang tersedia",
+                        paginate: {
+                            previous: "<",
+                            next: ">"
+                        }
+                    }
                 });
             });
 
@@ -154,7 +196,9 @@
                 buttons: [{
                     extend: 'excel',
                     text: 'Export Excel',
-                    title: 'Data Telemetri Rapid Soil Checker',
+                    title: function() {
+                        return `Data Telemetri Rapid Soil Checker (${agenda} - ${datetimeAgenda})`;
+                    },
                     className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
                     filename: function() {
                         return `data_telemetri_rsc_${timestamp()}`;
@@ -163,7 +207,14 @@
                 columnDefs: [{
                     className: "text-center",
                     targets: "_all"
-                }]
+                }],
+                language: {
+                    emptyTable: "Tidak ada data telemetri yang tersedia",
+                    paginate: {
+                        previous: "<",
+                        next: ">"
+                    }
+                }
             });
 
             // Enable pusher logging - don't include this in production
