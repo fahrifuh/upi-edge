@@ -241,7 +241,7 @@
                     'mg/kg')
                 renderAreaChart('#ecChart', 'Grafik data parameter Ec', 'Ec', @json($ec), 'uS/cm')
                 renderAreaChart('#phChart', 'Grafik data parameter Ph', 'Ph', @json($ph))
-                renderAreaChart('#tempChart', 'Grafik data parameter Temperature', 'Temperature', @json($temp), 'Celcius')
+                renderAreaChart('#tempChart', 'Grafik data parameter Temperature', 'Temperature', @json($temp), '\u00B0C')
                 renderAreaChart('#humidChart', 'Grafik data parameter Humidity', 'Humidity', @json($humid), '%')
             });
         </script>
