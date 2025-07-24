@@ -13,7 +13,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach ($schedules as $schedule)
+                @forelse ($schedules as $schedule)
                     @php
                         $start = \Carbon\Carbon::parse($schedule->date . ' ' . $schedule->start_time);
                         $end = \Carbon\Carbon::parse($schedule->date . ' ' . $schedule->end_time);
@@ -49,7 +49,11 @@
                             @endif
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center">
+                        <p class="text-xl font-semibold">Belum ada jadwal yang dibuat.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
