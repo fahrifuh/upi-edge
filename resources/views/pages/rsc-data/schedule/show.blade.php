@@ -21,11 +21,6 @@
                         <div class="flex justify-between">
                             <h1 class="text-3xl font-extrabold">Tabel Data Telemetri Fix Station</h1>
                         </div>
-                        {{-- <div>
-                            <h3>Terakhir diupdate: <span
-                                    id="datetime-newest-data">{{ \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') }}</span>
-                            </h3>
-                        </div> --}}
                     </div>
                 </div>
                 @if ($status == 'belum')
@@ -116,6 +111,61 @@
     @push('scripts')
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
+            // Get current timestamp for filename
+            const timestamp = () => {
+                const now = new Date();
+                const date = now.getDate().toString().padStart(2, '0');
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const year = now.getFullYear();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+
+                return `${year}${month}${date}_${hours}${minutes}${seconds}`;
+            }
+
+            // DataTable (using jQuery)
+            let table;
+            $(document).ready(function() {
+                table = $('#table-berlangsung').DataTable({
+                    responsive: true,
+                    ordering: false,
+                    dom: '<"ms-5 mb-2"B>rtp',
+                    buttons: [{
+                        extend: 'excel',
+                        text: 'Export Excel',
+                        title: 'Data Telemetri Rapid Soil Checker',
+                        className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
+                        filename: function() {
+                            return `data_telemetri_rsc_${timestamp()}`;
+                        }
+                    }],
+                    columnDefs: [{
+                        className: "text-center",
+                        targets: "_all"
+                    }]
+                });
+            });
+
+            $('#table-selesai').DataTable({
+                responsive: true,
+                ordering: false,
+                dom: '<"ms-5 mb-2"B>rtp',
+                buttons: [{
+                    extend: 'excel',
+                    text: 'Export Excel',
+                    title: 'Data Telemetri Rapid Soil Checker',
+                    className: 'bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600',
+                    filename: function() {
+                        return `data_telemetri_rsc_${timestamp()}`;
+                    }
+                }],
+                columnDefs: [{
+                    className: "text-center",
+                    targets: "_all"
+                }]
+            });
+
             // Enable pusher logging - don't include this in production
             const formatTimestamp = (timestamp) => {
                 return new Date(timestamp).toLocaleString('sv-SE');
@@ -133,22 +183,22 @@
                 const timestamp = new Date(data.created_at);
                 const start = new Date("{{ $start->format('Y-m-d H:i:s') }}");
                 const end = new Date("{{ $end->format('Y-m-d H:i:s') }}");
-                const row = document.createElement("tr");
-
                 if (timestamp >= start && timestamp <= end) {
-                    row.innerHTML = `
-                    <td>${formatTimestamp(data.created_at)}</td>
-                    <td>${data.device_id}</td>
-                    <td>${data.samples.Nitrogen}</td>
-                    <td>${data.samples.Phosporus}</td>
-                    <td>${data.samples.Kalium}</td>
-                    <td>${data.samples.Ec}</td>
-                    <td>${data.samples.Ph}</td>
-                    <td>${data.samples.Temperature}</td>
-                    <td>${data.samples.Humidity}</td>
-                    `;
+                    const newRow = table.row.add([
+                        formatTimestamp(data.created_at),
+                        data.device_id,
+                        `${data.samples.Nitrogen} mg/kg`,
+                        `${data.samples.Phosporus} mg/kg`,
+                        `${data.samples.Kalium} mg/kg`,
+                        `${data.samples.Ec} uS/cm`,
+                        `${data.samples.Ph}`,
+                        `${data.samples.Temperature} &deg;C`,
+                        `${data.samples.Humidity} %`,
+                    ]).draw(false);
 
-                    document.getElementById("fix-station-tbody").prepend(row);
+                    let newIndex = table.rows().count() - 1;
+                    let newNode = table.row(newIndex).node();
+                    $(newNode).prependTo('#fix-station-tbody')
                 }
             });
         </script>
