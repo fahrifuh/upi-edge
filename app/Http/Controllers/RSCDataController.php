@@ -15,11 +15,47 @@ class RSCDataController extends Controller
         return view('pages.rsc-data.index');
     }
 
-    public function indexMonitoring()
+    public function indexMonitoring(Request $request)
     {
-        $data = FixStation::latest()->take(20)->get();
+        $query = FixStation::query();
+
+        // Filter by date range
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        // Filter by device ID
+        if ($request->filled('device_id')) {
+            $query->where('device_id', $request->device_id);
+        }
+
+        $data = $query->latest()->take(100)->get();
         $lastUpdated = FixStation::latest()->first('created_at');
-        return view('pages.rsc-data.monitoring.index', compact('data', 'lastUpdated'));
+
+        // Get unique device IDs from the filtered data
+        $uniqueDeviceIds = $data->pluck('device_id')->unique()->sort()->values();
+
+        return view('pages.rsc-data.monitoring.index', compact('data', 'lastUpdated', 'uniqueDeviceIds'));
+    }
+
+    public function getUniqueDeviceIds(Request $request)
+    {
+        $query = FixStation::query();
+
+        // Apply same filters as the main query
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $uniqueDeviceIds = $query->distinct()->pluck('device_id')->sort()->values();
+
+        return response()->json($uniqueDeviceIds);
     }
 
     public function indexPenjadwalan()
