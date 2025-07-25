@@ -88,13 +88,13 @@
                                     <tr>
                                         <td>{{ $item->created_at }}</td>
                                         <td>{{ $item->device_id }}</td>
-                                        <td>{{ $item->samples->Nitrogen }}</td>
-                                        <td>{{ $item->samples->Phosporus }}</td>
-                                        <td>{{ $item->samples->Kalium }}</td>
-                                        <td>{{ $item->samples->Ec }}</td>
+                                        <td>{{ $item->samples->Nitrogen }} mg/kg</td>
+                                        <td>{{ $item->samples->Phosporus }} mg/kg</td>
+                                        <td>{{ $item->samples->Kalium }} mg/kg</td>
+                                        <td>{{ $item->samples->Ec }} uS/cm</td>
                                         <td>{{ $item->samples->Ph }}</td>
-                                        <td>{{ $item->samples->Temperature }}</td>
-                                        <td>{{ $item->samples->Humidity }}</td>
+                                        <td>{{ $item->samples->Temperature }} &deg;C</td>
+                                        <td>{{ $item->samples->Humidity }} %</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -121,13 +121,13 @@
                                     <tr>
                                         <td>{{ $item->created_at }}</td>
                                         <td>{{ $item->device_id }}</td>
-                                        <td>{{ $item->samples->Nitrogen }}</td>
-                                        <td>{{ $item->samples->Phosporus }}</td>
-                                        <td>{{ $item->samples->Kalium }}</td>
-                                        <td>{{ $item->samples->Ec }}</td>
+                                        <td>{{ $item->samples->Nitrogen }} mg/kg</td>
+                                        <td>{{ $item->samples->Phosporus }} mg/kg</td>
+                                        <td>{{ $item->samples->Kalium }} mg/kg</td>
+                                        <td>{{ $item->samples->Ec }} uS/cm</td>
                                         <td>{{ $item->samples->Ph }}</td>
-                                        <td>{{ $item->samples->Temperature }}</td>
-                                        <td>{{ $item->samples->Humidity }}</td>
+                                        <td>{{ $item->samples->Temperature }} &deg;C</td>
+                                        <td>{{ $item->samples->Humidity }} %</td>
                                     </tr>
                                 @endforeach
                             </tbody>
