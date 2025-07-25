@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/monitoring', [RSCDataController::class, 'indexMonitoring'])->name('monitoring.index');
         Route::get('/schedule', [RSCDataController::class, 'indexPenjadwalan'])->name('schedule.index');
         Route::get('/schedule/show/{id}', [RSCDataController::class, 'showPenjadwalan'])->name('schedule.show');
+        Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
     });
 });
 
