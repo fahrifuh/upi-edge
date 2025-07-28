@@ -5,8 +5,13 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
         <div>
+            <h2 class="text-3xl font-bold mb-3" style="color: #740101;">Sign In</h2>
+            <span class="text-slate-400">Enter your email and password to sign in!</span>
+        </div>
+
+        <!-- Email Address -->
+        <div class="mt-10">
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
