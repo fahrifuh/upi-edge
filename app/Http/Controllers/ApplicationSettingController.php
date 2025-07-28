@@ -22,6 +22,7 @@ class ApplicationSettingController extends Controller
             'version' => 'required|string',
             'copyright' => 'required|string',
             'copyright_year' => 'required|string',
+            'login_text' => 'nullable|string',
         ]);
 
         $setting = ApplicationSetting::first();
@@ -39,6 +40,7 @@ class ApplicationSettingController extends Controller
         $setting->version = $request->version;
         $setting->copyright = $request->copyright;
         $setting->copyright_year = $request->copyright_year;
+        $setting->login_text = $request->login_text;
         $setting->save();
 
         return redirect()->route('application-setting.index')->with('success', 'Pengaturan aplikasi berhasil disimpan');
@@ -53,6 +55,7 @@ class ApplicationSettingController extends Controller
             'version' => $setting->version ?? '1.0',
             'copyright' => $setting->copyright ?? 'Universitas Pendidikan Indonesia',
             'copyright_year' => $setting->copyright_year ?? '2025',
+            'login_text' => $setting->login_text ?? '',
         ]);
     }
 }

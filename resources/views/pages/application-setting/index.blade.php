@@ -43,6 +43,13 @@
                                     name="copyright_year" :value="old('copyright_year', $setting->copyright_year ?? '')" required autocomplete="copyright_year" />
                                 <x-input-error :messages="$errors->get('copyright_year')" class="mt-2" />
                             </div>
+                            <div>
+                                <x-input-label for="login_text">{{ __('Teks untuk halaman login (opsional)') }}</x-input-label>
+                                <textarea id="login_text" class="block mt-1 w-full rounded-xl" name="login_text" rows="1">
+                                    {{ old('login_text', $setting->login_text ?? '') }}
+                                </textarea>
+                                <x-input-error :messages="$errors->get('login_text')" class="mt-2" />
+                            </div>
                             <div class="col-span-2 text-end">
                                 <div class="w-full flex justify-end mt-4">
                                     <x-primary-button>
