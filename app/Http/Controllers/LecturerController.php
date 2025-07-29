@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lecturer;
+use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LecturerController extends Controller
 {
@@ -34,11 +36,12 @@ class LecturerController extends Controller
         $request->validate([
             'nip' => 'required|string|unique:lecturers,nip',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email',
+            'email' => 'required|email|unique:lecturers,email|unique:users,email',
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
             'department' => 'required|string',
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'required|confirmed',
         ], [
             'nip.required' => 'NIP harus diisi.',
             'nip.unique' => 'NIP sudah terdaftar.',
@@ -52,9 +55,20 @@ class LecturerController extends Controller
             'photo.image' => 'File yang diunggah harus berupa gambar.',
             'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
             'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'password.required' => 'Password harus diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+        ]);
+
+        // Simpan user baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'dosen',
         ]);
 
         $data = [
+            'user_id' => $user->id,
             'nip' => $request->nip,
             'name' => $request->name,
             'email' => $request->email,
@@ -104,11 +118,12 @@ class LecturerController extends Controller
         $request->validate([
             'nip' => 'required|string|unique:lecturers,nip,' . $id,
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email,' . $id,
+            'email' => 'required|email|unique:lecturers,email,' . $id . '|unique:users,email,' . (Lecturer::findOrFail($id)->user_id ?? 'NULL'),
             'address' => 'required|string',
             'gender' => 'required|in:l,p',
             'department' => 'required|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|confirmed',
         ], [
             'nip.required' => 'NIP harus diisi.',
             'nip.unique' => 'NIP sudah terdaftar.',
@@ -121,6 +136,7 @@ class LecturerController extends Controller
             'photo.image' => 'File yang diunggah harus berupa gambar.',
             'photo.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
             'photo.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
 
         $data = [
@@ -135,6 +151,13 @@ class LecturerController extends Controller
         $lecturer = Lecturer::findOrFail($id);
         $beforeUpdate = $lecturer->getOriginal();
         $lecturer->update($data);
+
+        // Update password user jika diisi
+        if ($request->filled('password')) {
+            $lecturer->user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
 
         $changes = [];
 
