@@ -43,7 +43,7 @@
                                         <!-- Transparent File Input -->
                                         <input id="photo"
                                             class="opacity-0 inset-0 absolute w-full h-full cursor-pointer"
-                                            type="file" name="photo" accept="image/*" required>
+                                            type="file" name="photo" accept="image/*">
                                     </div>
                                 </div>
                                 <x-input-error :messages="$errors->get('photo')" class="mt-2" />
