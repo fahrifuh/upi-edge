@@ -23,10 +23,29 @@
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            <div class="col-span-2">
                                 <x-input-label for="photo">{{ __('Foto (Tidak wajib)') }}</x-input-label>
-                                <input id="photo" class="block mt-1 w-full border-2" type="file" name="photo"
-                                    accept="image/*">
+                                <div class="mt-1">
+                                    <div class="relative">
+                                        <!-- Preview Container -->
+                                        <div id="imagePreviewContainer"
+                                            class="w-56 h-56 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
+                                            <div id="imagePreviewContent" class="text-center">
+                                                <i
+                                                    class="fas fa-cloud-upload-alt mx-auto text-5xl text-gray-400 mb-2"></i>
+                                                <p class="mt-2 text-sm text-gray-600">Klik untuk memilih foto</p>
+                                                <p class="text-xs text-gray-500">PNG, JPG, GIF hingga 2MB</p>
+                                            </div>
+                                            <img id="imagePreview" class="hidden w-full h-full object-cover rounded-xl"
+                                                alt="Preview">
+                                        </div>
+
+                                        <!-- Transparent File Input -->
+                                        <input id="photo"
+                                            class="opacity-0 inset-0 absolute w-full h-full cursor-pointer"
+                                            type="file" name="photo" accept="image/*">
+                                    </div>
+                                </div>
                                 <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                             </div>
                             <div>
@@ -62,6 +81,19 @@
                                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
                             </div>
                             <div>
+                                <x-input-label for="password">{{ __('Password (Opsional)') }}</x-input-label>
+                                <x-text-input id="password" class="block mt-1 w-full rounded-xl" type="password"
+                                    name="password" autocomplete="new-password" />
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label
+                                    for="password_confirmation">{{ __('Konfirmasi Password (Opsional)') }}</x-input-label>
+                                <x-text-input id="password_confirmation" class="block mt-1 w-full rounded-xl"
+                                    type="password" name="password_confirmation" autocomplete="new-password" />
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </div>
+                            <div>
                                 <x-input-label for="major">{{ __('Jurusan') }}</x-input-label>
                                 <x-text-input id="major" class="block mt-1 w-full rounded-xl" type="text"
                                     name="major" :value="$student->major" required autofocus autocomplete="major" />
@@ -76,7 +108,7 @@
                             </div>
                             <div>
                                 <x-input-label for="address">{{ __('Alamat') }}</x-input-label>
-                                <textarea id="address" class="block mt-1 w-full rounded-xl" name="address" rows="5" required>{{ $student->address }}</textarea>
+                                <textarea id="address" class="block mt-1 w-full rounded-xl" name="address" rows="3" required>{{ $student->address }}</textarea>
                                 <x-input-error :messages="$errors->get('address')" class="mt-2" />
                             </div>
                             <div class="col-span-2 text-right">
@@ -90,4 +122,30 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const fileInput = document.getElementById('photo');
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePreviewContent = document.getElementById('imagePreviewContent');
+
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            imagePreviewContent.classList.add('hidden');
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

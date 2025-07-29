@@ -15,4 +15,9 @@ class Student extends Model
     {
         return $this->belongsToMany(ActivitySchedule::class, 'activity_schedules_students');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
