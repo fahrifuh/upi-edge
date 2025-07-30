@@ -12,7 +12,7 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Monitoring</h5>
+                            <h5 class="text-md text-black font-bold">Raw Monitoring</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-gauge p-3 bg-primary text-white rounded-lg"></i>
@@ -23,10 +23,43 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Penjadwalan</h5>
+                            <h5 class="text-md text-black font-bold">Raw Penjadwalan</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-calendar p-3 bg-primary text-white rounded-lg"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('rsc-data.filtered-monitoring.index') }}" class="block">
+                    <div
+                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
+                        <div>
+                            <h5 class="text-md text-black font-bold">Filtered Monitoring</h5>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-filter p-3 bg-primary text-white rounded-lg"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('rsc-data.filtered-monitoring.index') }}" class="block">
+                    <div
+                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
+                        <div>
+                            <h5 class="text-md text-black font-bold">Filtered Penjadwalan</h5>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-filter p-3 bg-primary text-white rounded-lg"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ route('rsc-data.sensor-threshold.index') }}" class="block">
+                    <div
+                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
+                        <div>
+                            <h5 class="text-md text-black font-bold">Pengaturan Threshold</h5>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-sliders p-3 bg-primary text-white rounded-lg"></i>
                         </div>
                     </div>
                 </a>
