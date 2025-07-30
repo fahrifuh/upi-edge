@@ -43,7 +43,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('rsc-data.index') }}">Data Rapid Soil Checker (RSC)</a>
                 </li>
-                <li class="breadcrumb-item breadcrumb-active">{{ __('Monitoring') }}</li>
+                <li class="breadcrumb-item breadcrumb-active">{{ __('Raw Monitoring') }}</li>
             </ol>
         </h2>
     </x-slot>
@@ -256,7 +256,7 @@
 
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
-                const data = p.data;
+                const data = p.raw;
                 const newRow = table.row.add([
                     formatTimestamp(data.created_at),
                     data.device_id,

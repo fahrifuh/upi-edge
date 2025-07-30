@@ -44,7 +44,7 @@
                     <a href="{{ route('rsc-data.index') }}">Data Rapid Soil Checker</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('rsc-data.schedule.index') }}">Penjadwalan</a>
+                    <a href="{{ route('rsc-data.schedule.index') }}">Raw Penjadwalan</a>
                 </li>
                 <li class="breadcrumb-item breadcrumb-active">{{ __($schedule->agenda) }}</li>
             </ol>
@@ -230,7 +230,7 @@
 
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
-                const data = p.data;
+                const data = p.raw;
                 const timestamp = new Date(data.created_at);
                 const start = new Date("{{ $start->format('Y-m-d H:i:s') }}");
                 const end = new Date("{{ $end->format('Y-m-d H:i:s') }}");
