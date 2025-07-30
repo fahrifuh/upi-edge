@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Events\SensorData;
 use App\Models\ActivitySchedule;
+use App\Models\FilteredFixStation;
 use App\Models\FixStation;
+use App\Models\SensorThreshold;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -38,7 +40,33 @@ class RSCDataController extends Controller
         // Get unique device IDs from the filtered data
         $uniqueDeviceIds = $data->pluck('device_id')->unique()->sort()->values();
 
-        return view('pages.rsc-data.monitoring.index', compact('data', 'lastUpdated', 'uniqueDeviceIds'));
+        return view('pages.rsc-data.monitoring.raw', compact('data', 'lastUpdated', 'uniqueDeviceIds'));
+    }
+
+    public function indexFilteredMonitoring(Request $request)
+    {
+        $query = FilteredFixStation::query();
+
+        // Filter by date range
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        // Filter by device ID
+        if ($request->filled('device_id')) {
+            $query->where('device_id', $request->device_id);
+        }
+
+        $data = $query->latest()->take(100)->get();
+        $lastUpdated = FilteredFixStation::latest()->first('created_at');
+
+        // Get unique device IDs from the filtered data
+        $uniqueDeviceIds = $data->pluck('device_id')->unique()->sort()->values();
+
+        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds'));
     }
 
     public function getUniqueDeviceIds(Request $request)
@@ -83,11 +111,37 @@ class RSCDataController extends Controller
         if ($status !== 'belum') {
             $data = FixStation::whereBetween('created_at', [$start, $end])
                 ->orderBy('created_at', 'desc')
-                ->take(20)
+                ->take(100)
                 ->get();
         }
 
-        return view('pages.rsc-data.schedule.show', compact('data', 'status', 'start', 'end', 'schedule'));
+        return view('pages.rsc-data.schedule.raw', compact('data', 'status', 'start', 'end', 'schedule'));
+    }
+
+    public function showFilteredPenjadwalan($id)
+    {
+        $schedule = ActivitySchedule::findOrFail($id);
+
+        $start = Carbon::parse($schedule->date . ' ' . $schedule->start_time);
+        $end = Carbon::parse($schedule->date . ' ' . $schedule->end_time);
+        $now = now();
+
+        $status = match (true) {
+            $now < $start => 'belum',
+            $now >= $start && $now <= $end => 'berlangsung',
+            default => 'selesai'
+        };
+
+        $data = [];
+
+        if ($status !== 'belum') {
+            $data = FilteredFixStation::whereBetween('created_at', [$start, $end])
+                ->orderBy('created_at', 'desc')
+                ->take(100)
+                ->get();
+        }
+
+        return view('pages.rsc-data.schedule.filtered', compact('data', 'status', 'start', 'end', 'schedule'));
     }
 
     public function handleSensorData(Request $request)
@@ -107,10 +161,34 @@ class RSCDataController extends Controller
             'device_id' => $request->device_id,
             'samples' => $request->samples,
         ];
-
+        
         $fixStation = FixStation::create($data);
+        
+        $rawSamples = $fixStation->samples; // sudah object (stdClass)
+        $filteredSamples = clone $rawSamples; // clone agar tidak mengubah aslinya
+        
+        foreach ($filteredSamples as $key => $value) {
+            $threshold = SensorThreshold::where('parameter', $key)->first();
 
-        event(new SensorData($fixStation));
+            if ($threshold) {
+                $min = $threshold->min;
+                $max = $threshold->max;
+                $filteredValue = min(max($value, $min), $max);
+            } else {
+                $filteredValue = $value; // tidak ada threshold → biarkan
+            }
+
+            $filteredSamples->{$key} = $filteredValue; // set nilai baru
+        }
+
+        
+
+        $filteredFixStation = FilteredFixStation::create([
+            'device_id' => $request->device_id,
+            'samples' => $filteredSamples,
+        ]);
+
+        event(new SensorData($fixStation, $filteredFixStation));
 
         return response()->json([
             'status' => true,
