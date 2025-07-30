@@ -57,7 +57,7 @@
                 <div class="p-6">
                     <div class="flex flex-col space-y-2">
                         <div class="flex justify-between">
-                            <h1 class="text-3xl font-extrabold">Tabel Data Telemetri Fix Station</h1>
+                            <h1 class="text-3xl font-extrabold">Tabel Raw Data Telemetri Fix Station</h1>
                         </div>
                     </div>
                 </div>
