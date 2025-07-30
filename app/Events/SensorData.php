@@ -14,13 +14,15 @@ class SensorData implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $data;
+    public $raw;
+    public $filtered;
     /**
      * Create a new event instance.
      */
-    public function __construct($data)
+    public function __construct($raw, $filtered = null)
     {
-        $this->data = $data;
+        $this->raw = $raw;
+        $this->filtered = $filtered;
     }
 
     /**
@@ -38,5 +40,13 @@ class SensorData implements ShouldBroadcastNow
     public function broadcastAs()
     {
         return 'SensorData';
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'raw' => $this->raw,
+            'filtered' => $this->filtered,
+        ];
     }
 }
