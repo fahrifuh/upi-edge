@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sensor_thresholds', function (Blueprint $table) {
             $table->id();
-            $table->string('parameter');
+            $table->string('parameter')->unique();
             $table->decimal('min');
             $table->decimal('max');
             $table->timestamps();
