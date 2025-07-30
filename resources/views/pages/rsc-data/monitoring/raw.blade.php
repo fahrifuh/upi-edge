@@ -212,7 +212,7 @@
                     updateDeviceIdOptions();
                 }
 
-                function updateDeviceIdOptions() {
+                const updateDeviceIdOptions = () => {
                     const startDate = $('#start_date').val();
                     const endDate = $('#end_date').val();
 
