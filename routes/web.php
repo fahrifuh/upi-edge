@@ -8,6 +8,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
+use App\Http\Controllers\SensorThresholdController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,13 +70,23 @@ Route::middleware('auth')->group(function () {
     ]);
 
     Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+
     Route::prefix('/rsc-data')->name('rsc-data.')->group(function () {
         Route::get('/', [RSCDataController::class, 'index'])->name('index');
         Route::get('/monitoring', [RSCDataController::class, 'indexMonitoring'])->name('monitoring.index');
+        Route::get('/filtered-monitoring', [RSCDataController::class, 'indexFilteredMonitoring'])->name('filtered-monitoring.index');
         Route::get('/schedule', [RSCDataController::class, 'indexPenjadwalan'])->name('schedule.index');
         Route::get('/schedule/show/{id}', [RSCDataController::class, 'showPenjadwalan'])->name('schedule.show');
+        Route::get('/filtered-schedule', [RSCDataController::class, 'indexFilteredPenjadwalan'])->name('filtered-schedule.index');
         Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
+        Route::resource('/sensor-threshold', SensorThresholdController::class)->except('show')->names([
+            'index' => 'sensor-threshold.index',
+            'create' => 'sensor-threshold.create',
+            'store' => 'sensor-threshold.store',
+            'destroy' => 'sensor-threshold.destroy',
+        ]);
     });
+
 });
 
 require __DIR__ . '/auth.php';
