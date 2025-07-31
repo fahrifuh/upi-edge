@@ -5,7 +5,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('rsc-data.index') }}">Data Rapid Soil Checker</a>
                 </li>
-                <li class="breadcrumb-item breadcrumb-active">{{ __('Penjadwalan') }}</li>
+                <li class="breadcrumb-item breadcrumb-active">{{ $type == 'raw' ? __('Raw Penjadwalan') : __('Filtered Penjadwalan') }}</li>
             </ol>
         </h2>
     </x-slot>
@@ -42,7 +42,7 @@
                                 {{ $status }}
                             </div>
                             @if ($status != 'Belum Mulai')
-                                <a href="{{ route('rsc-data.schedule.show', $schedule->id) }}"
+                                <a href="{{ $type == 'raw' ? route('rsc-data.schedule.show', $schedule->id) : route('rsc-data.filtered-schedule.show', $schedule->id) }}"
                                     class="inline-block mt-3 ms-auto px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-700">
                                     Lihat Data
                                 </a>
