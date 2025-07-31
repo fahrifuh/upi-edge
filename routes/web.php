@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/schedule/show/{id}', [RSCDataController::class, 'showPenjadwalan'])->name('schedule.show');
         Route::get('/schedule/show-filtered/{id}', [RSCDataController::class, 'showFilteredPenjadwalan'])->name('filtered-schedule.show');
         Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
+        Route::get('/filtered-monitoring/device-ids', [RSCDataController::class, 'getFilteredUniqueDeviceIds'])->name('filtered-monitoring.device-ids');
         Route::resource('/sensor-threshold', SensorThresholdController::class)->except('show')->names([
             'index' => 'sensor-threshold.index',
             'create' => 'sensor-threshold.create',
