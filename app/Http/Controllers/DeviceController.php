@@ -36,7 +36,7 @@ class DeviceController extends Controller
             'series' => 'required|string',
             'name' => 'required|string',
             'installation_date' => 'required|date',
-            'koneksi' => 'required|in:lora,gsm,wifi',
+            'tipe_koneksi' => 'required|in:lora,gsm,wifi',
             'note' => 'required|string',
             'wifi_ssid' => 'nullable|string',
             'wifi_password' => 'nullable|string',
@@ -55,7 +55,7 @@ class DeviceController extends Controller
             'name.required' => 'Nama harus diisi.',
             'installation_date.required' => 'Tanggal pemasangan harus diisi.',
             'installation_date.date' => 'Tanggal pemasangan harus berupa tanggal yang valid.',
-            'koneksi.required' => 'Tipe koneksi harus dipilih.',
+            'tipe_koneksi.required' => 'Tipe koneksi harus dipilih.',
             'note.required' => 'Note harus diisi.'
         ]);
 
@@ -102,7 +102,7 @@ class DeviceController extends Controller
             'series' => 'required|string',
             'name' => 'required|string',
             'installation_date' => 'required|date',
-            'koneksi' => 'required|in:lora,gsm,wifi',
+            'tipe_koneksi' => 'required|in:lora,gsm,wifi',
             'note' => 'required|string',
             'wifi_ssid' => 'nullable|string',
             'wifi_password' => 'nullable|string',
@@ -120,7 +120,7 @@ class DeviceController extends Controller
             'name.required' => 'Nama harus diisi.',
             'installation_date.required' => 'Tanggal pemasangan harus diisi.',
             'installation_date.date' => 'Tanggal pemasangan harus berupa tanggal yang valid.',
-            'koneksi.required' => 'Tipe koneksi harus dipilih.',
+            'tipe_koneksi.required' => 'Tipe koneksi harus dipilih.',
             'note.required' => 'Note harus diisi.'
         ]);
 
