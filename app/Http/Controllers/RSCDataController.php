@@ -86,6 +86,23 @@ class RSCDataController extends Controller
         return response()->json($uniqueDeviceIds);
     }
 
+    public function getFilteredUniqueDeviceIds(Request $request)
+    {
+        $query = FilteredFixStation::query();
+
+        // Apply same filters as the main query
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date . ' 00:00:00',
+                $request->end_date . ' 23:59:59'
+            ]);
+        }
+
+        $uniqueDeviceIds = $query->distinct()->pluck('device_id')->sort()->values();
+
+        return response()->json($uniqueDeviceIds);
+    }
+
     public function indexPenjadwalan(Request $request)
     {
         $type = $request->query('type', 'raw');

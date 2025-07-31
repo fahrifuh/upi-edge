@@ -194,12 +194,12 @@
                     e.preventDefault();
                     const formData = new FormData(this);
                     const params = new URLSearchParams(formData);
-                    window.location.href = '{{ route('rsc-data.monitoring.index') }}?' + params.toString();
+                    window.location.href = '{{ route('rsc-data.filtered-monitoring.index') }}?' + params.toString();
                 });
 
                 // Handle reset filter
                 $('#resetFilter').on('click', function() {
-                    window.location.href = '{{ route('rsc-data.monitoring.index') }}';
+                    window.location.href = '{{ route('rsc-data.filtered-monitoring.index') }}';
                 });
 
                 // Update device ID options when date range changes
@@ -217,7 +217,7 @@
                     const endDate = $('#end_date').val();
 
                     if (startDate && endDate) {
-                        $.get('{{ route('rsc-data.monitoring.device-ids') }}', {
+                        $.get('{{ route('rsc-data.filtered-monitoring.device-ids') }}', {
                                 start_date: startDate,
                                 end_date: endDate
                             })
