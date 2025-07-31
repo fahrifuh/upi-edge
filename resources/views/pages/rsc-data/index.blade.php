@@ -48,7 +48,7 @@
                             <h5 class="text-md text-black font-bold">Filtered Penjadwalan</h5>
                         </div>
                         <div class="flex items-center">
-                            <i class="fa-solid fa-filter p-3 bg-primary text-white rounded-lg"></i>
+                            <i class="fa-solid fa-hourglass-half p-3 bg-primary text-white rounded-lg"></i>
                         </div>
                     </div>
                 </a>
