@@ -23,10 +23,29 @@
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="w-full">
+                            <div class="col-span-2">
                                 <x-input-label for="photo">{{ __('Foto (Tidak wajib)') }}</x-input-label>
-                                <input id="photo" class="block mt-1 w-full border-2" type="file" name="photo"
-                                    accept="image/*">
+                                <div class="mt-1">
+                                    <div class="relative">
+                                        <!-- Preview Container -->
+                                        <div id="imagePreviewContainer"
+                                            class="w-56 h-56 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
+                                            <div id="imagePreviewContent" class="text-center">
+                                                <i
+                                                    class="fas fa-cloud-upload-alt mx-auto text-5xl text-gray-400 mb-2"></i>
+                                                <p class="mt-2 text-sm text-gray-600">Klik untuk memilih foto</p>
+                                                <p class="text-xs text-gray-500">PNG, JPG, GIF hingga 2MB</p>
+                                            </div>
+                                            <img id="imagePreview" class="hidden w-full h-full object-cover rounded-xl"
+                                                alt="Preview">
+                                        </div>
+
+                                        <!-- Transparent File Input -->
+                                        <input id="photo"
+                                            class="opacity-0 inset-0 absolute w-full h-full cursor-pointer"
+                                            type="file" name="photo" accept="image/*">
+                                    </div>
+                                </div>
                                 <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                             </div>
                             <div class="w-full">
@@ -49,13 +68,14 @@
                                 <x-input-error :messages="$errors->get('installation_date')" class="mt-2" />
                             </div>
                             <div class="w-full">
-                                <x-input-label for="koneksi">{{ __('Tipe Koneksi') }}</x-input-label>
-                                <select id="koneksi" class="block mt-1 w-full rounded-xl" name="koneksi">
+                                <x-input-label for="tipe_koneksi">{{ __('Tipe Koneksi') }}</x-input-label>
+                                <select id="tipe_koneksi" class="block mt-1 w-full rounded-xl" name="tipe_koneksi">
                                     <option value="" data-type="">Pilih Tipe Koneksi</option>
                                     <option value="wifi" data-type="wifi" @selected($device->tipe_koneksi == 'wifi')>WiFi</option>
                                     <option value="lora" data-type="lora" @selected($device->tipe_koneksi == 'lora')>LoRa</option>
                                     <option value="gsm" data-type="gsm" @selected($device->tipe_koneksi == 'gsm')>GSM</option>
                                 </select>
+                                <x-input-error :messages="$errors->get('tipe_koneksi')" class="mt-2" />
                             </div>
                             <div class="w-full">
                                 <x-input-label for="note">{{ __('Note') }}</x-input-label>
@@ -199,31 +219,33 @@
                 }
             }
 
-            // function checkType(type) {
-            //     const debitElement = document.getElementById('debit')
-            //     const debitGroup = document.getElementById('debitGroup')
-            //     const mapGroup = document.getElementById('mapGroup')
-            //     const latElement = document.getElementById('latitude')
-            //     const lngElement = document.getElementById('longitude')
-
-
-            //     toggleGroups([debitGroup, mapGroup], false)
-            //     toggleFields([debitElement, latElement, lngElement], false)
-
-            //     if (type == 'head_unit') {
-            //         toggleGroups([debitGroup, mapGroup], true)
-            //         toggleFields([debitElement, latElement, lngElement], true)
-            //     }
-            // }
-
             document.addEventListener("DOMContentLoaded", () => {
-                document.getElementById('koneksi').addEventListener('change', e => {
-                    const selectElement = document.getElementById('koneksi')
+                document.getElementById('tipe_koneksi').addEventListener('change', e => {
+                    const selectElement = document.getElementById('tipe_koneksi')
                     checkKoneksi(selectElement.options[selectElement.selectedIndex].dataset.type);
-                })
+                });
 
-                // checkType("")
-                checkKoneksi("")
+                const fileInput = document.getElementById('photo');
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePreviewContent = document.getElementById('imagePreviewContent');
+
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            imagePreviewContent.classList.add('hidden');
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                checkKoneksi("{{ $device->tipe_koneksi }}");
             })
         </script>
     @endpush
