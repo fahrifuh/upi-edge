@@ -86,10 +86,11 @@ class RSCDataController extends Controller
         return response()->json($uniqueDeviceIds);
     }
 
-    public function indexPenjadwalan()
+    public function indexPenjadwalan(Request $request)
     {
+        $type = $request->query('type', 'raw');
         $schedules = ActivitySchedule::get();
-        return view('pages.rsc-data.schedule.index', compact('schedules'));
+        return view('pages.rsc-data.schedule.index', compact('schedules', 'type'));
     }
 
     public function showPenjadwalan($id)

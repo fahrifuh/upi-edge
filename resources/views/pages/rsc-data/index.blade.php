@@ -19,7 +19,7 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ route('rsc-data.schedule.index') }}" class="block">
+                <a href="{{ route('rsc-data.schedule.index', ['type' => 'raw']) }}" class="block">
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ route('rsc-data.filtered-monitoring.index') }}" class="block">
+                <a href="{{ route('rsc-data.schedule.index', ['type' => 'filtered']) }}" class="block">
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
