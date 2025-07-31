@@ -88,6 +88,10 @@
                                             </tr>
                                         @break
                                     @endswitch
+                                    <tr>
+                                        <td class="px-6 py-4 border-b">Note</td>
+                                        <td class="px-6 py-4 border-b">{{ $device->note }}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
