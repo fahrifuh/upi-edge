@@ -116,7 +116,7 @@
             footer.textContent = `Copyright © ${data.copyright_year} ${data.copyright}. All Right Reserved.`;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        const updateCurrentTime = () => {
             const now = new Date();
             const day = now.toLocaleString('id-ID', {
                 weekday: 'long'
@@ -131,7 +131,20 @@
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('time-current').textContent = `${hours}:${minutes}`;
             document.getElementById('date-current').textContent = `${day}, ${date}`;
+        }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update time every minute at 00 seconds
+            updateCurrentTime();
+            const now = new Date();
+            const msUntilNextMinute = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+            // wait until 00 seconds, then update time
+            setTimeout(() => {
+                updateCurrentTime();
+                setInterval(updateCurrentTime, 60000);
+            }, msUntilNextMinute);
+
+            // get application settings
             getApplicationSettings();
         });
     </script>
