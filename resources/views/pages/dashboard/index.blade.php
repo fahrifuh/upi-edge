@@ -11,11 +11,14 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <x-card-summary href="{{ route('lecturer.index') }}" title="Total Dosen" total="{{ $lecturers }}" icon="fa-solid fa-chalkboard-user" />
-                <x-card-summary href="{{ route('student.index') }}" title="Total Mahasiswa" total="{{ $students }}" icon="fa-solid fa-user-graduate" />
-                <x-card-summary href="{{ route('device.index') }}" title="Total Perangkat" total="{{ $devices }}" icon="fa-solid fa-satellite-dish" />
-                <x-card-summary href="{{ route('activity-schedule.index') }}" title="Total Jadwal Kegiatan Praktikum" total="{{ $activitySchedules }}"
-                    icon="fa-solid fa-calendar-days" />
+                <x-card-summary href="{{ route('lecturer.index') }}" title="Total Dosen" total="{{ $lecturers }}"
+                    icon="fa-solid fa-chalkboard-user" />
+                <x-card-summary href="{{ route('student.index') }}" title="Total Mahasiswa" total="{{ $students }}"
+                    icon="fa-solid fa-user-graduate" />
+                <x-card-summary href="{{ route('device.index') }}" title="Total Perangkat" total="{{ $devices }}"
+                    icon="fa-solid fa-satellite-dish" />
+                <x-card-summary href="{{ route('activity-schedule.index') }}" title="Total Jadwal Kegiatan Praktikum"
+                    total="{{ $activitySchedules }}" icon="fa-solid fa-calendar-days" />
             </div>
 
             <div class="bg-white rounded-xl shadow p-6 mb-4">
@@ -42,11 +45,17 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow p-6 mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-blue-500"></i>
-                    Grafik Telemetri 24 Jam Terakhir
-                </h2>
+            <div class="bg-white rounded-xl shadow p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-blue-500"></i>
+                        Grafik Telemetri 24 Jam Terakhir
+                    </h2>
+                    <select name="type" id="type" class="border-gray-400 rounded-md">
+                        <option value="raw">Data Raw</option>
+                        <option value="filtered">Data Filtered</option>
+                    </select>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="w-full">
                         <div id="nitrogenChart"></div>
@@ -77,6 +86,42 @@
     @push('scripts')
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
+            // data for chart
+            const nData = {
+                raw: @json($n),
+                filtered: @json($nFiltered)
+            }
+
+            const pData = {
+                raw: @json($p),
+                filtered: @json($pFiltered)
+            }
+
+            const kData = {
+                raw: @json($k),
+                filtered: @json($kFiltered)
+            }
+
+            const ecData = {
+                raw: @json($ec),
+                filtered: @json($ecFiltered)
+            }
+
+            const phData = {
+                raw: @json($ph),
+                filtered: @json($phFiltered)
+            }
+
+            const tempData = {
+                raw: @json($temp),
+                filtered: @json($tempFiltered)
+            }
+
+            const humidData = {
+                raw: @json($humid),
+                filtered: @json($humidFiltered)
+            }
+
             // generate random color for chart
             const chartColors = [
                 '#42a5f5', // biru
@@ -103,14 +148,14 @@
             }
 
             // function for render chart
-            const renderAreaChart = (containerId, title, titleSeries, data, unit = '') => {
+            const renderLineChart = (containerId, title, titleSeries, data, unit = '') => {
                 const chartId = containerId.replace('#', '');
-                const fillColor = getUniqueRandomColor();
+                const lineColor = getUniqueRandomColor();
 
                 const options = {
                     chart: {
                         id: chartId,
-                        type: 'area',
+                        type: 'line',
                         zoom: {
                             enabled: false
                         },
@@ -135,7 +180,7 @@
                         type: 'datetime',
                         labels: {
                             datetimeUTC: false,
-                            format: 'HH:mm'
+                            format: 'HH:mm:ss'
                         },
                         title: {
                             text: 'Waktu (WIB)'
@@ -148,15 +193,18 @@
                     },
                     stroke: {
                         curve: 'smooth',
-                        width: 2
+                        width: 2,
+                        colors: [lineColor]
                     },
-                    fill: {
-                        type: 'solid',
-                        colors: [fillColor]
+                    markers: {
+                        size: 4,
+                        colors: [lineColor],
+                        strokeColors: '#fff',
+                        strokeWidth: 2
                     },
                     tooltip: {
                         x: {
-                            format: 'dd MMM yyyy HH:mm'
+                            format: 'dd MMM yyyy HH:mm:ss'
                         },
                         y: {
                             formatter: function(value) {
@@ -171,7 +219,7 @@
             }
 
             // function for update area chart when new data received
-            const updateAreaChart = (chartId, value, timestamp) => {
+            const updateLineChart = (chartId, value, timestamp) => {
                 ApexCharts.exec(chartId, 'appendData', [{
                     data: [{
                         x: new Date(timestamp),
@@ -180,25 +228,35 @@
                 }]);
             }
 
-            // Pusher
-            Pusher.logToConsole = true;
+            // function for switch data type (raw or filtered)
+            const switchChartData = (chartId, titleSeries, data) => {
+                ApexCharts.exec(chartId, 'updateSeries', [{
+                    name: titleSeries,
+                    data: data
+                }]);
+            }
 
+            // Pusher
             var pusher = new Pusher("{{ config('broadcasting.connections.pusher.key') }}", {
                 cluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}"
             });
 
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
-                const data = p.data;
+                const type = document.getElementById('type').value;
+                const data = type === 'filtered' ? p.filtered : p.raw;
 
-                updateAreaChart('nitrogenChart', data.samples.Nitrogen, data.created_at);
-                updateAreaChart('phosporusChart', data.samples.Phosporus, data.created_at);
-                updateAreaChart('kaliumChart', data.samples.Kalium, data.created_at);
-                updateAreaChart('ecChart', data.samples.Ec, data.created_at);
-                updateAreaChart('phChart', data.samples.Ph, data.created_at);
+                updateLineChart('nitrogenChart', data.samples.Nitrogen, data.created_at);
+                updateLineChart('phosporusChart', data.samples.Phosporus, data.created_at);
+                updateLineChart('kaliumChart', data.samples.Kalium, data.created_at);
+                updateLineChart('ecChart', data.samples.Ec, data.created_at);
+                updateLineChart('phChart', data.samples.Ph, data.created_at);
+                updateLineChart('tempChart', data.samples.Temperature, data.created_at);
+                updateLineChart('humidChart', data.samples.Humidity, data.created_at);
             });
 
             document.addEventListener('DOMContentLoaded', function() {
+                // countdown for upcoming activities
                 const countdownElements = document.querySelectorAll('.countdown');
 
                 const updateCountdowns = () => {
@@ -207,42 +265,63 @@
                     countdownElements.forEach(el => {
                         const startTime = new Date(el.dataset.start).getTime();
                         const diff = startTime - now;
-
                         if (diff <= 0) {
                             el.textContent = "Sedang berlangsung";
                             return;
                         }
-
                         const hours = Math.floor(diff / (1000 * 60 * 60));
                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                        el.textContent = `Berlangsung dalam ${hours} jam ${minutes} menit ${seconds} detik`;
+                        el.textContent = `Berlangsung dalam ${hours} jam ${minutes} menit`;
                     });
-                }
+                };
 
-                // Jalankan update pertama kali dan setiap detik
+                // run countdown
                 updateCountdowns();
-                const interval = setInterval(() => {
+
+                // calculate time to next minute
+                const now = new Date();
+                const seconds = now.getSeconds();
+                const msUntilNextMinute = (60 - seconds) * 1000;
+
+                // sync to 00 seconds, then interval every minute
+                setTimeout(() => {
                     updateCountdowns();
 
-                    // Auto-stop jika semua sudah lewat (opsional)
-                    const unfinished = [...countdownElements].filter(el => {
-                        return new Date(el.dataset.start).getTime() > Date.now();
-                    });
-                    if (unfinished.length === 0) clearInterval(interval);
-                }, 1000);
+                    const interval = setInterval(() => {
+                        updateCountdowns();
 
-                renderAreaChart('#nitrogenChart', 'Grafik data parameter Nitrogen', 'Nitrogen',
-                    @json($n), 'mg/kg')
-                renderAreaChart('#phosporusChart', 'Grafik data parameter Phosporus', 'Phosporus',
-                    @json($p), 'mg/kg')
-                renderAreaChart('#kaliumChart', 'Grafik data parameter Kalium', 'Kalium', @json($k),
+                        // stop if all countdown is finished
+                        const unfinished = [...countdownElements].some(el => {
+                            return new Date(el.dataset.start).getTime() > Date.now();
+                        });
+
+                        if (!unfinished) clearInterval(interval);
+                    }, 1000 * 60); // every minute
+                }, msUntilNextMinute);
+
+                document.getElementById('type').addEventListener('change', function() {
+                    const type = this.value;
+                    switchChartData('nitrogenChart', 'Nitrogen', nData[type]);
+                    switchChartData('phosporusChart', 'Phosporus', pData[type]);
+                    switchChartData('kaliumChart', 'Kalium', kData[type]);
+                    switchChartData('ecChart', 'Ec', ecData[type]);
+                    switchChartData('phChart', 'Ph', phData[type]);
+                    switchChartData('tempChart', 'Temperature', tempData[type]);
+                    switchChartData('humidChart', 'Humidity', humidData[type]);
+                });
+
+                renderLineChart('#nitrogenChart', 'Grafik data parameter Nitrogen', 'Nitrogen',
+                    nData.raw, 'mg/kg')
+                renderLineChart('#phosporusChart', 'Grafik data parameter Phosporus', 'Phosporus',
+                    pData.raw, 'mg/kg')
+                renderLineChart('#kaliumChart', 'Grafik data parameter Kalium', 'Kalium', kData.raw,
                     'mg/kg')
-                renderAreaChart('#ecChart', 'Grafik data parameter Ec', 'Ec', @json($ec), 'uS/cm')
-                renderAreaChart('#phChart', 'Grafik data parameter Ph', 'Ph', @json($ph))
-                renderAreaChart('#tempChart', 'Grafik data parameter Temperature', 'Temperature', @json($temp), '\u00B0C')
-                renderAreaChart('#humidChart', 'Grafik data parameter Humidity', 'Humidity', @json($humid), '%')
+                renderLineChart('#ecChart', 'Grafik data parameter Ec', 'Ec', ecData.raw, 'uS/cm')
+                renderLineChart('#phChart', 'Grafik data parameter Ph', 'Ph', phData.raw)
+                renderLineChart('#tempChart', 'Grafik data parameter Temperature', 'Temperature',
+                    tempData.raw, '\u00B0C')
+                renderLineChart('#humidChart', 'Grafik data parameter Humidity', 'Humidity',
+                    humidData.raw, '%')
             });
         </script>
     @endpush

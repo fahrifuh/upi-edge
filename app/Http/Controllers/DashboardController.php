@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivitySchedule;
 use App\Models\Device;
+use App\Models\FilteredFixStation;
 use App\Models\FixStation;
 use App\Models\Lecturer;
 use App\Models\Student;
@@ -32,43 +33,79 @@ class DashboardController extends Controller
 
         // Data Grafik Telemetri 24 Jam Terakhir
         $startTime = now()->subHours(24);
-        $telemetryData = FixStation::where('created_at', '>=', $startTime)->orderBy('created_at')->get();
+        $rawData = FixStation::where('created_at', '>=', $startTime)->orderBy('created_at')->get();
+        $filteredData = FilteredFixStation::where('created_at', '>=', $startTime)->orderBy('created_at')->get();
 
-        $n = $telemetryData->map(fn($d) => [
+        $n = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Nitrogen,
         ]);
 
-        $p = $telemetryData->map(fn($d) => [
+        $nFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Nitrogen,
+        ]);
+
+        $p = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Phosporus,
         ]);
 
-        $k = $telemetryData->map(fn($d) => [
+        $pFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Phosporus,
+        ]);
+
+        $k = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Kalium,
         ]);
 
-        $ec = $telemetryData->map(fn($d) => [
+        $kFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Kalium,
+        ]);
+
+        $ec = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Ec,
         ]);
 
-        $ph = $telemetryData->map(fn($d) => [
+        $ecFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Ec,
+        ]);
+
+        $ph = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Ph,
         ]);
 
-        $temp = $telemetryData->map(fn($d) => [
+        $phFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Ph,
+        ]);
+
+        $temp = $rawData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Temperature,
         ]);
+
+        $tempFiltered = $filteredData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Temperature,
+        ]);
+
+        $humid = $rawData->map(fn($d) => [
+            'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
+            'y' => $d->samples->Humidity,
+        ]);
         
-        $humid = $telemetryData->map(fn($d) => [
+        $humidFiltered = $filteredData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Humidity,
         ]);
 
-        return view('pages.dashboard.index', compact('upcomingActivities', 'lecturers', 'students', 'devices', 'activitySchedules', 'n', 'p', 'k', 'ec', 'ph', 'temp', 'humid'));
+        return view('pages.dashboard.index', compact('upcomingActivities', 'lecturers', 'students', 'devices', 'activitySchedules', 'n', 'nFiltered', 'p', 'pFiltered', 'k', 'kFiltered', 'ec', 'ecFiltered', 'ph', 'phFiltered', 'temp', 'tempFiltered', 'humid', 'humidFiltered'));
     }
 }
