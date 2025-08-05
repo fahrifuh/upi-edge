@@ -28,7 +28,7 @@
 
         <div class="flex flex-col items-center justify-center max-md:order-first">
             <a href="/" id="app-logo" class="w-5/6"></a>
-            <p class="font-bold text-2xl text-center mt-8" id="login-text">Dibiayai dengan ...</p>
+            <p class="font-bold text-2xl text-center mt-8" id="login-text"></p>
         </div>
     </div>
     <div class="w-full text-center mb-2" id="footer"></div>
