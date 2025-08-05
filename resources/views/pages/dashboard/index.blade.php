@@ -11,12 +11,16 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <x-card-summary href="{{ route('lecturer.index') }}" title="Total Dosen" total="{{ $lecturers }}"
-                    icon="fa-solid fa-chalkboard-user" />
-                <x-card-summary href="{{ route('student.index') }}" title="Total Mahasiswa" total="{{ $students }}"
-                    icon="fa-solid fa-user-graduate" />
-                <x-card-summary href="{{ route('device.index') }}" title="Total Perangkat" total="{{ $devices }}"
-                    icon="fa-solid fa-satellite-dish" />
+                @if (in_array(Auth::user()->role, ['dosen', 'superuser']))
+                    <x-card-summary href="{{ route('student.index') }}" title="Total Mahasiswa" total="{{ $students }}"
+                        icon="fa-solid fa-user-graduate" />
+                @endif
+                @if (Auth::user()->role == 'superuser')
+                    <x-card-summary href="{{ route('lecturer.index') }}" title="Total Dosen" total="{{ $lecturers }}"
+                        icon="fa-solid fa-chalkboard-user" />
+                    <x-card-summary href="{{ route('device.index') }}" title="Total Perangkat"
+                        total="{{ $devices }}" icon="fa-solid fa-satellite-dish" />
+                @endif
                 <x-card-summary href="{{ route('activity-schedule.index') }}" title="Total Jadwal Kegiatan Praktikum"
                     total="{{ $activitySchedules }}" icon="fa-solid fa-calendar-days" />
             </div>
@@ -32,7 +36,7 @@
                             <div class="text-xl font-semibold text-gray-900">{{ $activity->agenda }}</div>
                             <div class="text-base text-gray-500 mt-2">
                                 {{ \Carbon\Carbon::parse($activity->date)->format('d M Y') }}<br>
-                                {{ substr($activity->start_time, 0, 5) }} – {{ substr($activity->end_time, 0, 5) }}
+                                {{ substr($activity->start_time, 0, 5) }} - {{ substr($activity->end_time, 0, 5) }}
                             </div>
                             <div class="mt-5 text-blue-600 font-bold text-xl countdown"
                                 data-start="{{ \Carbon\Carbon::parse($activity->date . ' ' . $activity->start_time)->toIso8601String() }}">

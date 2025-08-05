@@ -58,8 +58,10 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
                     <h1 class="text-3xl font-extrabold text-start">Tabel Data Threshold</h1>
-                    <a href="{{ route('rsc-data.sensor-threshold.create') }}"
-                        class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
+                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                        <a href="{{ route('rsc-data.sensor-threshold.create') }}"
+                            class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
+                    @endif
                 </div>
                 <div class="overflow-x-scroll">
                     <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="threshold-table">
@@ -69,7 +71,9 @@
                                 <th class="dt-center">Parameter</th>
                                 <th class="dt-center">Batas Bawah</th>
                                 <th class="dt-center">Batas Atas</th>
-                                <th class="dt-center">Aksi</th>
+                                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                    <th class="dt-center">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -79,20 +83,23 @@
                                     <td>{{ $threshold->parameter }}</td>
                                     <td>{{ $threshold->min }}</td>
                                     <td>{{ $threshold->max }}</td>
-                                    <td class="flex space-x-2 items-center">
-                                        <a href="{{ route('rsc-data.sensor-threshold.edit', $threshold->id) }}">
-                                            <i class="fa fa-pen text-blue-500"></i>
-                                        </a>
-                                        <form action="{{ route('rsc-data.sensor-threshold.destroy', $threshold->id) }}"
-                                            method="POST" class="delete-form"
-                                            data-series="{{ $threshold->parameter }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa fa-trash text-red-500"></i>
-                                            </button>
-                                        </form>
-                                    </td>
+                                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                        <td class="flex space-x-2 items-center">
+                                            <a href="{{ route('rsc-data.sensor-threshold.edit', $threshold->id) }}">
+                                                <i class="fa fa-pen text-blue-500"></i>
+                                            </a>
+                                            <form
+                                                action="{{ route('rsc-data.sensor-threshold.destroy', $threshold->id) }}"
+                                                method="POST" class="delete-form"
+                                                data-series="{{ $threshold->parameter }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">
+                                                    <i class="fa fa-trash text-red-500"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -151,15 +158,27 @@
                             next: ">"
                         }
                     },
-                    columnDefs: [{
-                            targets: [0, 4],
-                            searchable: false
-                        },
-                        {
-                            className: "text-center",
-                            targets: "_all"
-                        }
-                    ],
+                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                        columnDefs: [{
+                                targets: [0, 4],
+                                searchable: false
+                            },
+                            {
+                                className: "text-center",
+                                targets: "_all"
+                            }
+                        ],
+                    @else
+                        columnDefs: [{
+                                targets: [0, 3],
+                                searchable: false
+                            },
+                            {
+                                className: "text-center",
+                                targets: "_all"
+                            }
+                        ],
+                    @endif
                 });
             });
 

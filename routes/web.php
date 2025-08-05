@@ -19,58 +19,21 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile (Pengaturan Akun)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/master-data', function () {
-        return view('pages.master-data.index');
-    })->name('master-data.index');
+    // Index Jadwal Kegiatan Praktikum
+    Route::get('/activity-schedule', [ActivityScheduleController::class, 'index'])->name('activity-schedule.index');
 
-    Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
-    Route::post('/application-setting', [ApplicationSettingController::class, 'save'])->name('application-setting.save');
+    // Index Pengaturan Threshold
+    Route::get('/rsc-data/sensor-threshold', [SensorThresholdController::class, 'index'])->name('rsc-data.sensor-threshold.index');
 
-    Route::resource('lecturers', LecturerController::class)->names([
-        'index' => 'lecturer.index',
-        'create' => 'lecturer.create',
-        'store' => 'lecturer.store',
-        'show' => 'lecturer.show',
-        'edit' => 'lecturer.edit',
-        'update' => 'lecturer.update',
-        'destroy' => 'lecturer.destroy',
-    ]);
+    // Index Log Aktivitas
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
 
-    Route::resource('students', StudentController::class)->names([
-        'index' => 'student.index',
-        'create' => 'student.create',
-        'store' => 'student.store',
-        'show' => 'student.show',
-        'edit' => 'student.edit',
-        'update' => 'student.update',
-        'destroy' => 'student.destroy',
-    ]);
-
-    Route::resource('activity-schedule', ActivityScheduleController::class)->except('show')->names([
-        'index' => 'activity-schedule.index',
-        'create' => 'activity-schedule.create',
-        'store' => 'activity-schedule.store',
-        'edit' => 'activity-schedule.edit',
-        'update' => 'activity-schedule.update',
-        'destroy' => 'activity-schedule.destroy',
-    ]);
-
-    Route::resource('device', DeviceController::class)->names([
-        'index' => 'device.index',
-        'create' => 'device.create',
-        'store' => 'device.store',
-        'show' => 'device.show',
-        'edit' => 'device.edit',
-        'update' => 'device.update',
-        'destroy' => 'device.destroy',
-    ]);
-
-    Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
-
+    // Data RSC - Raw & Filtered 
     Route::prefix('/rsc-data')->name('rsc-data.')->group(function () {
         Route::get('/', [RSCDataController::class, 'index'])->name('index');
         Route::get('/monitoring', [RSCDataController::class, 'indexMonitoring'])->name('monitoring.index');
@@ -80,14 +43,73 @@ Route::middleware('auth')->group(function () {
         Route::get('/schedule/show-filtered/{id}', [RSCDataController::class, 'showFilteredPenjadwalan'])->name('filtered-schedule.show');
         Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
         Route::get('/filtered-monitoring/device-ids', [RSCDataController::class, 'getFilteredUniqueDeviceIds'])->name('filtered-monitoring.device-ids');
-        Route::resource('/sensor-threshold', SensorThresholdController::class)->except('show')->names([
-            'index' => 'sensor-threshold.index',
-            'create' => 'sensor-threshold.create',
-            'store' => 'sensor-threshold.store',
-            'destroy' => 'sensor-threshold.destroy',
-        ]);
     });
 
+    // Akses Fitur Khusus Dosen & Superuser
+    Route::middleware('role:superuser,dosen')->group(function () {
+        // Index Master Data
+        Route::get('/master-data', function () {
+            return view('pages.master-data.index');
+        })->name('master-data.index');
+
+        // CRUD Data Mahasiswa
+        Route::resource('students', StudentController::class)->names([
+            'index' => 'student.index',
+            'create' => 'student.create',
+            'store' => 'student.store',
+            'show' => 'student.show',
+            'edit' => 'student.edit',
+            'update' => 'student.update',
+            'destroy' => 'student.destroy',
+        ]);
+
+        // Create, Update, Delete Jadwal Kegiatan Praktikum
+        Route::resource('activity-schedule', ActivityScheduleController::class)->except('index', 'show')->names([
+            'create' => 'activity-schedule.create',
+            'store' => 'activity-schedule.store',
+            'edit' => 'activity-schedule.edit',
+            'update' => 'activity-schedule.update',
+            'destroy' => 'activity-schedule.destroy',
+        ]);
+
+        // Create, Update, Delete Threshold
+        Route::resource('/rsc-data/sensor-threshold', SensorThresholdController::class)->except('index', 'show')->names([
+            'create' => 'rsc-data.sensor-threshold.create',
+            'store' => 'rsc-data.sensor-threshold.store',
+            'edit' => 'rsc-data.sensor-threshold.edit',
+            'update' => 'rsc-data.sensor-threshold.update',
+            'destroy' => 'rsc-data.sensor-threshold.destroy',
+        ]);
+
+        // Index & Save Pengaturan Aplikasi
+        Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
+        Route::post('/application-setting', [ApplicationSettingController::class, 'save'])->name('application-setting.save');
+    });
+
+    // Akses Fitur Khusus Superuser
+    Route::middleware('role:superuser')->group(function () {
+        // CRUD Data Dosen
+        Route::resource('lecturers', LecturerController::class)->names([
+            'index' => 'lecturer.index',
+            'create' => 'lecturer.create',
+            'store' => 'lecturer.store',
+            'show' => 'lecturer.show',
+            'edit' => 'lecturer.edit',
+            'update' => 'lecturer.update',
+            'destroy' => 'lecturer.destroy',
+        ]);
+
+        // CRUD Data Perangkat
+        Route::resource('device', DeviceController::class)->names([
+            'index' => 'device.index',
+            'create' => 'device.create',
+            'store' => 'device.store',
+            'show' => 'device.show',
+            'edit' => 'device.edit',
+            'update' => 'device.update',
+            'destroy' => 'device.destroy',
+        ]);
+    });
 });
 
 require __DIR__ . '/auth.php';

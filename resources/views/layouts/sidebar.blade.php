@@ -26,21 +26,23 @@
                         <div class="text-slate-500">Dashboard</div>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="{{ route('master-data.index') }}" class="menu-link">
-                        <i @class([
-                            'menu-icon',
-                            'active-icon' => request()->routeIs(
-                                'master-data.*',
-                                'lecturer.*',
-                                'student.*',
-                                'device.*'),
-                            'fa-solid',
-                            'fa-database',
-                        ])></i>
-                        <div class="text-slate-500">Data Master</div>
-                    </a>
-                </li>
+                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                    <li class="menu-item">
+                        <a href="{{ route('master-data.index') }}" class="menu-link">
+                            <i @class([
+                                'menu-icon',
+                                'active-icon' => request()->routeIs(
+                                    'master-data.*',
+                                    'lecturer.*',
+                                    'student.*',
+                                    'device.*'),
+                                'fa-solid',
+                                'fa-database',
+                            ])></i>
+                            <div class="text-slate-500">Data Master</div>
+                        </a>
+                    </li>
+                @endif
                 <li class="menu-item">
                     <a href="{{ route('activity-schedule.index') }}" class="menu-link">
                         <i @class([
@@ -74,17 +76,19 @@
                         <div class="text-slate-500">Pengaturan Akun</div>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="{{ route('application-setting.index') }}" class="menu-link">
-                        <i @class([
-                            'menu-icon',
-                            'active-icon' => request()->routeIs('application-setting.*'),
-                            'fa-solid',
-                            'fa-gear',
-                        ])></i>
-                        <div class="text-slate-500">Pengaturan Aplikasi</div>
-                    </a>
-                </li>
+                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                    <li class="menu-item">
+                        <a href="{{ route('application-setting.index') }}" class="menu-link">
+                            <i @class([
+                                'menu-icon',
+                                'active-icon' => request()->routeIs('application-setting.*'),
+                                'fa-solid',
+                                'fa-gear',
+                            ])></i>
+                            <div class="text-slate-500">Pengaturan Aplikasi</div>
+                        </a>
+                    </li>
+                @endif
                 <li class="menu-item">
                     <a href="{{ route('activity-log.index') }}" class="menu-link">
                         <i @class([

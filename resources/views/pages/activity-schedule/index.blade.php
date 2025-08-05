@@ -53,8 +53,10 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between my-5 items-center">
                     <h1 class="text-3xl font-extrabold text-start">Tabel Jadwal Kegiatan Praktikum</h1>
-                    <a href="{{ route('activity-schedule.create') }}"
-                        class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
+                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                        <a href="{{ route('activity-schedule.create') }}"
+                            class="bg-primary px-4 py-2 text-white rounded-lg ml-auto w-auto mt-0">Tambah Data</a>
+                    @endif
                 </div>
                 <div class="overflow-x-scroll">
                     <table class="w-full align-middle border-slate-400 table mb-0 mt-3" id="activity-schedule-table">
@@ -68,7 +70,9 @@
                                 <th>Jumlah Dosen</th>
                                 <th>Jumlah Mahasiswa</th>
                                 <th>Agenda</th>
-                                <th>Aksi</th>
+                                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                    <th>Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -107,24 +111,26 @@
                                         </div>
                                     </td>
                                     <td>{{ $activitySchedule->agenda }}</td>
-                                    <td class="h-full">
-                                        <div class="flex items-center gap-2 h-full">
-                                            <a href="{{ route('activity-schedule.edit', $activitySchedule->id) }}"
-                                                class="h-100">
-                                                <i class="fa fa-pen text-blue-500"></i>
-                                            </a>
-                                            <form
-                                                action="{{ route('activity-schedule.destroy', $activitySchedule->id) }}"
-                                                method="POST" class="delete-form"
-                                                data-nama="{{ $activitySchedule->agenda }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit">
-                                                    <i class="fa fa-trash text-red-500"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
+                                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                        <td class="h-full">
+                                            <div class="flex items-center gap-2 h-full">
+                                                <a href="{{ route('activity-schedule.edit', $activitySchedule->id) }}"
+                                                    class="h-100">
+                                                    <i class="fa fa-pen text-blue-500"></i>
+                                                </a>
+                                                <form
+                                                    action="{{ route('activity-schedule.destroy', $activitySchedule->id) }}"
+                                                    method="POST" class="delete-form"
+                                                    data-nama="{{ $activitySchedule->agenda }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit">
+                                                        <i class="fa fa-trash text-red-500"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -197,13 +203,23 @@
                             next: ">"
                         }
                     },
-                    columnDefs: [{
-                        targets: [5, 6, 8],
-                        orderable: false
-                    }, {
-                        targets: [0, 5, 6, 8],
-                        searchable: false
-                    }],
+                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                        columnDefs: [{
+                            targets: [5, 6, 8],
+                            orderable: false
+                        }, {
+                            targets: [0, 5, 6, 8],
+                            searchable: false
+                        }],
+                    @else
+                        columnDefs: [{
+                            targets: [5, 6, 7],
+                            orderable: false
+                        }, {
+                            targets: [0, 5, 6, 7],
+                            searchable: false
+                        }],
+                    @endif
                 });
             });
 
