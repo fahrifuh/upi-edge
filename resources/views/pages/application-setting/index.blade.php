@@ -13,10 +13,35 @@
                     <form action="{{ route('application-setting.save') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            {{-- <div>
                                 <x-input-label for="image">{{ __('Foto (Tidak wajib)') }}</x-input-label>
                                 <input id="image" class="block mt-1 w-full border-2" type="file" name="image"
                                     accept="image/*">
+                                <x-input-error :messages="$errors->get('image')" class="mt-2" />
+                            </div> --}}
+                            <div class="col-span-2">
+                                <x-input-label for="image">{{ __('Foto (Tidak wajib)') }}</x-input-label>
+                                <div class="mt-1">
+                                    <div class="relative">
+                                        <!-- Preview Container -->
+                                        <div id="imagePreviewContainer"
+                                            class="w-56 h-56 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
+                                            <div id="imagePreviewContent" class="text-center">
+                                                <i
+                                                    class="fas fa-cloud-upload-alt mx-auto text-5xl text-gray-400 mb-2"></i>
+                                                <p class="mt-2 text-sm text-gray-600">Klik untuk memilih foto</p>
+                                                <p class="text-xs text-gray-500">PNG, JPG, GIF hingga 2MB</p>
+                                            </div>
+                                            <img id="imagePreview" class="hidden w-full h-full object-cover rounded-xl"
+                                                alt="Preview">
+                                        </div>
+
+                                        <!-- Transparent File Input -->
+                                        <input id="image"
+                                            class="opacity-0 inset-0 absolute w-full h-full cursor-pointer"
+                                            type="file" name="image" accept="image/*" required>
+                                    </div>
+                                </div>
                                 <x-input-error :messages="$errors->get('image')" class="mt-2" />
                             </div>
                             <div>
@@ -45,7 +70,7 @@
                             </div>
                             <div>
                                 <x-input-label for="login_text">{{ __('Teks untuk halaman login (opsional)') }}</x-input-label>
-                                <textarea id="login_text" class="block mt-1 w-full rounded-xl" name="login_text" rows="1">
+                                <textarea id="login_text" class="block mt-1 w-full rounded-xl" name="login_text" rows="2">
                                     {{ old('login_text', $setting->login_text ?? '') }}
                                 </textarea>
                                 <x-input-error :messages="$errors->get('login_text')" class="mt-2" />
@@ -74,6 +99,28 @@
                     timer: 2000,
                 });
             @endif
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const fileInput = document.getElementById('image');
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePreviewContent = document.getElementById('imagePreviewContent');
+
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            imagePreviewContent.classList.add('hidden');
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
         </script>
     @endpush
 </x-app-layout>
