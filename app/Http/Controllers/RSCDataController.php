@@ -166,18 +166,18 @@ class RSCDataController extends Controller
     {
         $request->validate([
             'device_id' => 'required',
-            'samples.Nitrogen' => 'nullable',
-            'samples.Phosporus' => 'nullable',
-            'samples.Kalium' => 'nullable',
-            'samples.Ec' => 'nullable',
-            'samples.Ph' => 'nullable',
-            'samples.Temperature' => 'nullable',
-            'samples.Humidity' => 'nullable',
+            'soilrs485.Nitrogen' => 'nullable',
+            'soilrs485.Phosporus' => 'nullable',
+            'soilrs485.Kalium' => 'nullable',
+            'soilrs485.Ec' => 'nullable',
+            'soilrs485.Ph' => 'nullable',
+            'soilrs485.Temperature' => 'nullable',
+            'soilrs485.Humidity' => 'nullable',
         ]);
 
         $data = [
             'device_id' => $request->device_id,
-            'samples' => $request->samples,
+            'samples' => $request->soilrs485,
         ];
         
         $fixStation = FixStation::create($data);
@@ -193,7 +193,7 @@ class RSCDataController extends Controller
                 $max = $threshold->max;
                 $filteredValue = min(max($value, $min), $max);
             } else {
-                $filteredValue = $value; // tidak ada threshold → biarkan
+                $filteredValue = $value; // tidak ada threshold = biarkan
             }
 
             $filteredSamples->{$key} = $filteredValue; // set nilai baru
