@@ -48,7 +48,7 @@
                                 <x-input-error :messages="$errors->get('end_time')" class="mt-2" />
                             </div>
                             <div>
-                                <x-input-label for="lecturers" class="mb-1">{{ __('Daftar Dosen') }}</x-input-label>
+                                <x-input-label for="lecturers" class="mb-1">{{ __('Daftar Dosen (pilih satu atau lebih)') }}</x-input-label>
                                 <select name="lecturers[]" id="lecturers"
                                     class="block w-full rounded-xl py-1 px-2 select2" multiple required>
                                     @foreach ($lecturers as $lecturer)
@@ -62,7 +62,7 @@
                             </div>
                             <div>
                                 <x-input-label for="students"
-                                    class="mb-1">{{ __('Daftar Mahasiswa') }}</x-input-label>
+                                    class="mb-1">{{ __('Daftar Mahasiswa (pilih satu atau lebih)') }}</x-input-label>
                                 <select name="students[]" id="students" class="block w-full rounded-xl select2"
                                     multiple required>
                                     @foreach ($students as $student)
