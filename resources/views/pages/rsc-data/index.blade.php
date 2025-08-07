@@ -63,6 +63,24 @@
                         </div>
                     </div>
                 </a>
+                <div class="md:col-span-2 px-3 sm:px-0">
+                    <p class="text-sm text-gray-500 font-bold">
+                        CATATAN:
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Raw = Data dari sensor langsung ditampilkan di tabel.
+                    <p class="text-sm text-gray-500">
+                        Filtered = Data dari sensor difilter terlebih dahulu sesuai threshold, lalu hasilnya ditampilkan
+                        di tabel.
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Monitoring = Data akan ditampilkan terus-menerus sesuai interval yang ditentukan.
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Penjadwalan = Hanya data yang timestamp nya berada di rentang waktu yang ditentukan yang akan
+                        ditampilkan.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
