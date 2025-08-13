@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $now = Carbon::now();
 
         // Jadwal Kegiatan Mendatang
-        $upcomingActivities = ActivitySchedule::get()
+        $upcomingActivities = ActivitySchedule::forCurrentUser()->get()
             ->filter(function ($activity) use ($now) {
                 $start = Carbon::parse($activity->date . ' ' . $activity->start_time);
                 return $start >= $now;
@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $lecturers = Lecturer::count();
         $students = Student::count();
         $devices = Device::count();
-        $activitySchedules = ActivitySchedule::count();
+        $activitySchedules = ActivitySchedule::forCurrentUser()->count();
 
         // Data Grafik Telemetri 24 Jam Terakhir
         $startTime = now()->subHours(24);
@@ -100,7 +100,7 @@ class DashboardController extends Controller
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Humidity,
         ]);
-        
+
         $humidFiltered = $filteredData->map(fn($d) => [
             'x' => Carbon::parse($d->created_at)->timezone('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'y' => $d->samples->Humidity,

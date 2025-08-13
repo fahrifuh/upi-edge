@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivitySchedule;
 use App\Models\Lecturer;
 use App\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,7 @@ class ActivityScheduleController extends Controller
      */
     public function index()
     {
-        $activitySchedules = ActivitySchedule::with('students', 'lecturers')->withCount('students', 'lecturers')->get();
+        $activitySchedules = ActivitySchedule::forCurrentUser()->with('students', 'lecturers')->withCount('students', 'lecturers')->get();
         return view('pages.activity-schedule.index', compact('activitySchedules'));
     }
 
@@ -95,6 +96,8 @@ class ActivityScheduleController extends Controller
         $activitySchedule = ActivitySchedule::with('lecturers', 'students')->findOrFail($id);
         $lecturers = Lecturer::get();
         $students = Student::get();
+        $activitySchedule->start_time = Carbon::parse($activitySchedule->start_time)->format('H:i');
+        $activitySchedule->end_time = Carbon::parse($activitySchedule->end_time)->format('H:i');
         return view('pages.activity-schedule.edit', compact('activitySchedule', 'lecturers', 'students'));
     }
 
