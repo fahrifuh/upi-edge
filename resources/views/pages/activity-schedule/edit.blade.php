@@ -20,8 +20,9 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg px-4">
                 <div class="p-6">
                     <h1 class="text-3xl font-extrabold mb-4">Ubah Jadwal Kegiatan Praktikum</h1>
-                    <form action="{{ route('activity-schedule.store') }}" method="POST">
+                    <form action="{{ route('activity-schedule.update', $activitySchedule->id) }}" method="POST">
                         @csrf
+                        @method('PUT')
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="date">{{ __('Tanggal') }}</x-input-label>
