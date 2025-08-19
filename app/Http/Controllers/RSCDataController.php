@@ -8,6 +8,7 @@ use App\Models\FilteredFixStation;
 use App\Models\FixStation;
 use App\Models\SensorThreshold;
 use Carbon\Carbon;
+use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 
 class RSCDataController extends Controller
@@ -213,5 +214,59 @@ class RSCDataController extends Controller
             'message' => 'Data RSC berhasil diterima dan disimpan!',
             'data' => $data
         ], 201);
+    }
+
+    public function getRekomendasiTanaman()
+    {
+        $sensorData = FixStation::latest()->first();
+        $n = $sensorData->samples->Nitrogen;
+        $p = $sensorData->samples->Phosporus;
+        $k = $sensorData->samples->Kalium;
+        $ec = $sensorData->samples->Ec;
+        $ph = $sensorData->samples->Ph;
+        $temp = $sensorData->samples->Temperature;
+        $humid = $sensorData->samples->Humidity;
+
+        $prompt = "
+        Kamu adalah sistem rekomendasi tanaman. 
+        Berikan hasil dalam format JSON yang valid saja, tanpa penjelasan tambahan.
+        
+        Kondisi tanah:
+        - pH: $ph
+        - Kelembaban: $humid%
+        - Nitrogen: $n
+        - Phosporus: $p
+        - Kalium: $k
+        - Ec: $ec
+        - Suhu: $temp
+        
+        Format JSON yang harus kamu ikuti:
+        {
+          \"tanaman_rekomendasi\": [
+            {
+              \"nama\": \"string\",
+              \"kategori\": \"sayuran | buah | hias | penutup_tanah\",
+              \"alasan\": \"string singkat, maksimal 1 kalimat\"
+            }
+          ]
+        }
+        
+        Berikan hanya 5 tanaman rekomendasi sesuai kondisi di atas.
+        ";
+
+        $result =  Gemini::generativeModel('gemini-2.0-flash')->generateContent($prompt);
+        $response = $result->text();
+
+        $cleanedResponse = trim($response);
+        // Hapus blok code fence seperti ```json dan ```
+        $cleanedResponse = preg_replace('/^```json\s*|\s*```$/i', '', $cleanedResponse);
+        // Bersihkan lagi spasi berlebih
+        $cleanedResponse = trim($cleanedResponse);
+        $decodedResponse = json_decode($cleanedResponse, true);
+
+        return response()->json([
+            'prompt' => $prompt,
+            'response' => $decodedResponse
+        ]);
     }
 }
