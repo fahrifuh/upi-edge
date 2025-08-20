@@ -180,12 +180,12 @@ class RSCDataController extends Controller
             'device_id' => $request->device_id,
             'samples' => $request->soilrs485,
         ];
-        
+
         $fixStation = FixStation::create($data);
-        
+
         $rawSamples = $fixStation->samples; // sudah object (stdClass)
         $filteredSamples = clone $rawSamples; // clone agar tidak mengubah aslinya
-        
+
         foreach ($filteredSamples as $key => $value) {
             $threshold = SensorThreshold::where('parameter', $key)->first();
 
@@ -200,7 +200,7 @@ class RSCDataController extends Controller
             $filteredSamples->{$key} = $filteredValue; // set nilai baru
         }
 
-        
+
 
         $filteredFixStation = FilteredFixStation::create([
             'device_id' => $request->device_id,
@@ -218,7 +218,36 @@ class RSCDataController extends Controller
 
     public function getRekomendasiTanaman()
     {
-        $sensorData = FixStation::latest()->first();
+        $mode = request()->query('source', 'fix');
+        $scheduleId = request()->query('scheduleId');
+
+        if ($scheduleId) {
+            $jadwal = ActivitySchedule::findOrFail($scheduleId);
+            if (!$jadwal) {
+                return response()->json(['error' => 'Jadwal tidak ditemukan'], 404);
+            }
+
+            // Format date and time
+            $startDateTime = Carbon::parse($jadwal->date . ' ' . $jadwal->start_time);
+            $endDateTime   = Carbon::parse($jadwal->date . ' ' . $jadwal->end_time);
+
+            if ($mode === 'fix') {
+                $sensorData = FixStation::whereBetween('created_at', [$startDateTime, $endDateTime])
+                    ->latest()
+                    ->first();
+            } else {
+                $sensorData = FilteredFixStation::whereBetween('created_at', [$startDateTime, $endDateTime])
+                    ->latest()
+                    ->first();
+            }
+        } else {
+            if ($mode === 'fix') {
+                $sensorData = FixStation::latest()->first();
+            } else {
+                $sensorData = FilteredFixStation::latest()->first();
+            }
+        }
+
         $n = $sensorData->samples->Nitrogen;
         $p = $sensorData->samples->Phosporus;
         $k = $sensorData->samples->Kalium;
@@ -233,15 +262,19 @@ class RSCDataController extends Controller
         
         Kondisi tanah:
         - pH: $ph
-        - Kelembaban: $humid%
-        - Nitrogen: $n
-        - Phosporus: $p
-        - Kalium: $k
-        - Ec: $ec
-        - Suhu: $temp
+        - Kelembapan Tanah: $humid %
+        - Nitrogen: $n mg/kg
+        - Phosporus: $p mg/kg
+        - Kalium: $k mg/kg
+        - Ec: $ec uS/cm
+        - Suhu Tanah: $temp celcius
         
         Format JSON yang harus kamu ikuti:
         {
+          \"klasifikasi_tanah\": {
+              \"kategori\": \"string\",
+              \"deskripsi\": \"string singkat\"
+            },
           \"tanaman_rekomendasi\": [
             {
               \"nama\": \"string\",
