@@ -60,10 +60,13 @@
                             <h1 class="text-3xl font-extrabold">Tabel Filtered Data Telemetri Fix Station</h1>
                         </div>
                         <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                        <button id="openModalBtn"
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition w-auto ms-auto">
-                            Cek Rekomendasi Tanaman
-                        </button>
+                        <div class="w-auto ms-auto flex flex-col gap-1">
+                            <button id="openModalBtn"
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+                                Cek Rekomendasi Tanaman
+                            </button>
+                            <span class="text-sm text-slate-600 italic text-end">*dikerjakan oleh Gemini AI</span>
+                        </div>
                     </div>
                 </div>
                 @if ($status == 'belum')
