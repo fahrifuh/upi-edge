@@ -12,7 +12,7 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Raw Monitoring</h5>
+                            <h5 class="text-md text-black font-bold">Raw Data Monitoring</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-gauge p-3 bg-primary text-white rounded-lg"></i>
@@ -23,7 +23,7 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Raw Penjadwalan</h5>
+                            <h5 class="text-md text-black font-bold">Raw Data Penjadwalan</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-calendar p-3 bg-primary text-white rounded-lg"></i>
@@ -34,7 +34,7 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Filtered Monitoring</h5>
+                            <h5 class="text-md text-black font-bold">Filtered Data Monitoring</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-filter p-3 bg-primary text-white rounded-lg"></i>
@@ -45,7 +45,7 @@
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                         <div>
-                            <h5 class="text-md text-black font-bold">Filtered Penjadwalan</h5>
+                            <h5 class="text-md text-black font-bold">Filtered Data Penjadwalan</h5>
                         </div>
                         <div class="flex items-center">
                             <i class="fa-solid fa-hourglass-half p-3 bg-primary text-white rounded-lg"></i>
