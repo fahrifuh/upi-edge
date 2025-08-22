@@ -10,6 +10,7 @@ use App\Models\SensorThreshold;
 use Carbon\Carbon;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RSCDataController extends Controller
 {
@@ -216,7 +217,7 @@ class RSCDataController extends Controller
         ], 201);
     }
 
-    public function getRekomendasiTanaman()
+    public function getRekomendasiTanaman($id)
     {
         $mode = request()->query('source', 'fix');
         $scheduleId = request()->query('scheduleId');
@@ -301,5 +302,28 @@ class RSCDataController extends Controller
             'prompt' => $prompt,
             'response' => $decodedResponse
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $data = FixStation::findOrFail($id);
+        $data->delete();
+
+        activity()
+            ->performedOn($data)
+            ->event('delete')
+            ->causedBy(Auth::user())
+            ->log('Data RSC dengan timestamp' . $data->created_at . 'dihapus.');
+
+        $pages = [
+            'rm' => 'rsc-data.monitoring.index',
+            'rs' => 'rsc-data.schedule.index',
+            'fm' => 'rsc-data.filtered-monitoring.index',
+            'fs' => 'rsc-data.filtered-schedule.index'
+        ];
+        $pageParam = request()->query('page', 'rm');
+        $redirect = $pages[$pageParam];
+
+        return redirect()->route($redirect)->with('success', 'Data RSC berhasil dihapus.');
     }
 }
