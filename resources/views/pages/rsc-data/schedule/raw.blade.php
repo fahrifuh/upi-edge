@@ -59,14 +59,6 @@
                         <div class="flex justify-between">
                             <h1 class="text-3xl font-extrabold">Tabel Raw Data Telemetri Fix Station</h1>
                         </div>
-                        <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                        <div class="w-auto ms-auto flex flex-col gap-1">
-                            <button id="openModalBtn"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
-                                Cek Rekomendasi Tanaman
-                            </button>
-                            <span class="text-sm text-slate-600 italic text-end">*dikerjakan oleh Gemini AI</span>
-                        </div>
                     </div>
                 </div>
                 @if ($status == 'belum')
@@ -142,35 +134,6 @@
                         </table>
                     </div>
                 @endif
-            </div>
-        </div>
-    </div>
-
-    <div id="recommendationModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
-            <!-- Tombol close -->
-            <button id="closeModalBtn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
-                <i class="fa-solid fa-xmark text-4xl"></i>
-            </button>
-
-            <h2 class="text-xl font-semibold mb-4">Rekomendasi Tanaman</h2>
-
-            <!-- Loader -->
-            <div id="loading" class="text-center py-4 hidden">
-                <span class="text-gray-500">Sedang memproses...</span>
-            </div>
-
-            <!-- Klasifikasi tanah -->
-            <div id="soilClassification" class="hidden mb-6 p-4 border-l-4 border-green-500 bg-green-50 rounded">
-                <h3 class="font-semibold text-green-700">Klasifikasi Tanah</h3>
-                <p id="soilCategory" class="text-gray-800 font-medium"></p>
-                <p id="soilDescription" class="text-gray-600 text-sm"></p>
-            </div>
-
-            <!-- Container hasil -->
-            <div id="recommendationList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Card hasil akan ditambahkan via JS -->
             </div>
         </div>
     </div>
@@ -288,67 +251,6 @@
                     let newNode = table.row(newIndex).node();
                     $(newNode).prependTo('#fix-station-tbody')
                 }
-            });
-
-            document.addEventListener("DOMContentLoaded", function() {
-                const openModalBtn = document.getElementById('openModalBtn');
-                const closeModalBtn = document.getElementById('closeModalBtn');
-                const modal = document.getElementById('recommendationModal');
-                const loading = document.getElementById('loading');
-                const listContainer = document.getElementById('recommendationList');
-                const soilBox = document.getElementById("soilClassification");
-                const soilCategory = document.getElementById("soilCategory");
-                const soilDescription = document.getElementById("soilDescription");
-                const scheduleId = "{{ $schedule->id }}";
-
-                // Buka modal
-                openModalBtn.addEventListener('click', async () => {
-                    modal.classList.remove('hidden');
-                    listContainer.innerHTML = ''; // reset isi
-                    soilBox.classList.add("hidden"); // reset klasifikasi tanah
-                    loading.classList.remove('hidden');
-
-                    try {
-                        // Panggil endpoint Laravel yang mengakses Gemini
-                        const res = await fetch(
-                            `/api/rekomendasi-tanaman?source=fix&scheduleId=${scheduleId}`);
-                        const data = await res.json();
-                        loading.classList.add('hidden');
-
-                        if (data.response) {
-                            if (data.response.klasifikasi_tanah) {
-                                soilBox.classList.remove("hidden");
-                                soilCategory.innerText =
-                                    `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
-                                soilDescription.innerText = data.response.klasifikasi_tanah.deskripsi;
-                            }
-                            if (data.response.tanaman_rekomendasi) {
-                                data.response.tanaman_rekomendasi.forEach(item => {
-                                    const card = `
-                                    <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
-                                        <h3 class="font-bold text-lg">${item.nama}</h3>
-                                        <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
-                                    <p class="text-gray-600 mt-2">${item.alasan}</p>
-                                    </div>
-                                `;
-                                    listContainer.insertAdjacentHTML('beforeend', card);
-                                });
-                            }
-                        } else {
-                            listContainer.innerHTML =
-                                `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
-                        }
-                    } catch (err) {
-                        loading.classList.add('hidden');
-                        listContainer.innerHTML = `<p class="text-red-500">Gagal mengambil data.</p>`;
-                        console.error(err);
-                    }
-                });
-
-                // Tutup modal
-                closeModalBtn.addEventListener('click', () => {
-                    modal.classList.add('hidden');
-                });
             });
         </script>
     @endpush
