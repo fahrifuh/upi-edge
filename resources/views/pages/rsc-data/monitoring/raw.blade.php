@@ -120,6 +120,7 @@
                                 <th class="dt-center">pH Tanah</th>
                                 <th class="dt-center">Suhu Tanah</th>
                                 <th class="dt-center">Kelembapan Tanah</th>
+                                <th class="dt-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="fix-station-tbody">
@@ -134,6 +135,17 @@
                                     <td>{{ $item->samples->Ph }}</td>
                                     <td>{{ $item->samples->Temperature }} &deg;C</td>
                                     <td>{{ $item->samples->Humidity }} %</td>
+                                    <td>
+                                        <form
+                                            action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'rm']) }}"
+                                            method="POST" class="delete-form" data-series="{{ $item->created_at }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit">
+                                                <i class="fa fa-trash text-red-500"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -272,6 +284,36 @@
                 let newIndex = table.rows().count() - 1;
                 let newNode = table.row(newIndex).node();
                 $(newNode).prependTo('#fix-station-tbody')
+            });
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            @endif
+
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    const dataTimestamp = this.getAttribute('data-series');
+                    Swal.fire({
+                        title: 'Konfirmasi',
+                        text: `Apakah Anda yakin ingin menghapus data RSC dengan timestamp ${dataTimestamp}?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                })
             });
         </script>
     @endpush
