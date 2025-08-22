@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/schedule/show-filtered/{id}', [RSCDataController::class, 'showFilteredPenjadwalan'])->name('filtered-schedule.show');
         Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
         Route::get('/filtered-monitoring/device-ids', [RSCDataController::class, 'getFilteredUniqueDeviceIds'])->name('filtered-monitoring.device-ids');
+        Route::delete('/{id}', [RSCDataController::class, 'destroy'])->name('destroy');
     });
 
     // Akses Fitur Khusus Dosen & Superuser
