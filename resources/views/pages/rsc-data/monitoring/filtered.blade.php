@@ -67,7 +67,7 @@
                                 class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
                                 Cek Rekomendasi Tanaman
                             </button>
-                            <span class="text-sm text-slate-600 italic text-end">*dikerjakan oleh Gemini AI</span>
+                            <span class="text-sm text-slate-600 italic text-end">*dikerjakan oleh AI</span>
                         </div>
                         <!-- Filter Section -->
                         <div class="bg-gray-50 p-4 rounded-lg">
