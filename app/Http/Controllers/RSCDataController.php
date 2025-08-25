@@ -228,24 +228,16 @@ class RSCDataController extends Controller
                 return response()->json(['error' => 'Jadwal tidak ditemukan'], 404);
             }
 
-            // Format date and time
-            $startDateTime = Carbon::parse($jadwal->date . ' ' . $jadwal->start_time);
-            $endDateTime   = Carbon::parse($jadwal->date . ' ' . $jadwal->end_time);
-
             if ($mode === 'fix') {
-                $sensorData = FixStation::whereBetween('created_at', [$startDateTime, $endDateTime])
-                    ->latest()
-                    ->first();
+                $sensorData = FixStation::findOrFail($id);
             } else {
-                $sensorData = FilteredFixStation::whereBetween('created_at', [$startDateTime, $endDateTime])
-                    ->latest()
-                    ->first();
+                $sensorData = FilteredFixStation::findOrFail($id);
             }
         } else {
             if ($mode === 'fix') {
-                $sensorData = FixStation::latest()->first();
+                $sensorData = FixStation::findOrFail($id);
             } else {
-                $sensorData = FilteredFixStation::latest()->first();
+                $sensorData = FilteredFixStation::findOrFail($id);
             }
         }
 
