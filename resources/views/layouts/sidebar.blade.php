@@ -43,6 +43,19 @@
                         </a>
                     </li>
                 @endif
+                @if (Auth::user()->role == 'superuser')
+                    <li class="menu-item">
+                        <a href="{{ route('subscription.index') }}" class="menu-link">
+                            <i @class([
+                                'menu-icon',
+                                'active-icon' => request()->routeIs('subscription.*'),
+                                'fa-solid',
+                                'fa-credit-card',
+                            ])></i>
+                            <div class="text-slate-500">Manajemen Langganan</div>
+                        </a>
+                    </li>
+                @endif
                 <li class="menu-item">
                     <a href="{{ route('activity-schedule.index') }}" class="menu-link">
                         <i @class([
