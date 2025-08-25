@@ -61,14 +61,6 @@
                                     id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
                             </h3>
                         </div>
-                        <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                        <div class="w-auto ms-auto flex flex-col gap-1">
-                            <button id="openModalBtn"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
-                                Cek Rekomendasi Tanaman
-                            </button>
-                            <span class="text-sm text-slate-600 italic text-end">*dikerjakan oleh AI</span>
-                        </div>
                         <!-- Filter Section -->
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <h4 class="text-lg font-semibold mb-3">Filter Data</h4>
@@ -143,7 +135,13 @@
                                     <td>{{ $item->samples->Ph }}</td>
                                     <td>{{ $item->samples->Temperature }} &deg;C</td>
                                     <td>{{ $item->samples->Humidity }} %</td>
-                                    <td>
+                                    <td class="flex space-x-3 items-center">
+                                        <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
+                                        <button id="openModalBtn"
+                                            class="rounded-lg"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fa-solid fa-lightbulb text-green-500"></i>
+                                        </button>
                                         <form
                                             action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fm']) }}"
                                             method="POST" class="delete-form" data-series="{{ $item->created_at }}">
@@ -324,7 +322,7 @@
             });
 
             document.addEventListener("DOMContentLoaded", function() {
-                const openModalBtn = document.getElementById('openModalBtn');
+                const openModalBtn = document.querySelectorAll('#openModalBtn');
                 const closeModalBtn = document.getElementById('closeModalBtn');
                 const modal = document.getElementById('recommendationModal');
                 const loading = document.getElementById('loading');
@@ -335,47 +333,54 @@
 
 
                 // Buka modal
-                openModalBtn.addEventListener('click', async () => {
-                    modal.classList.remove('hidden');
-                    listContainer.innerHTML = ''; // reset isi
-                    soilBox.classList.add("hidden"); // reset klasifikasi tanah
-                    loading.classList.remove('hidden');
+                openModalBtn.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        modal.classList.remove('hidden');
+                        listContainer.innerHTML = ''; // reset isi
+                        soilBox.classList.add("hidden"); // reset klasifikasi tanah
+                        loading.classList.remove('hidden');
 
-                    try {
-                        // Panggil endpoint Laravel yang mengakses Gemini
-                        const res = await fetch('/api/rekomendasi-tanaman?source=filtered');
-                        const data = await res.json();
-                        loading.classList.add('hidden');
+                        const dataId = btn.getAttribute('data-id');
 
-                        if (data.response) {
-                            if (data.response.klasifikasi_tanah) {
-                                soilBox.classList.remove("hidden");
-                                soilCategory.innerText =
-                                    `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
-                                soilDescription.innerText = data.response.klasifikasi_tanah.deskripsi;
-                            }
-                            if (data.response.tanaman_rekomendasi) {
-                                data.response.tanaman_rekomendasi.forEach(item => {
-                                    const card = `
+                        try {
+                            // Panggil endpoint Laravel yang mengakses Gemini
+                            const res = await fetch(
+                                `/api/rekomendasi-tanaman/${dataId}?source=filtered`);
+                            const data = await res.json();
+                            loading.classList.add('hidden');
+
+                            if (data.response) {
+                                if (data.response.klasifikasi_tanah) {
+                                    soilBox.classList.remove("hidden");
+                                    soilCategory.innerText =
+                                        `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
+                                    soilDescription.innerText = data.response.klasifikasi_tanah
+                                        .deskripsi;
+                                }
+                                if (data.response.tanaman_rekomendasi) {
+                                    data.response.tanaman_rekomendasi.forEach(item => {
+                                        const card = `
                                     <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
                                         <h3 class="font-bold text-lg">${item.nama}</h3>
                                         <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
                                     <p class="text-gray-600 mt-2">${item.alasan}</p>
                                     </div>
-                                `;
-                                    listContainer.insertAdjacentHTML('beforeend', card);
-                                });
+                                    `;
+                                        listContainer.insertAdjacentHTML('beforeend', card);
+                                    });
+                                }
+                            } else {
+                                listContainer.innerHTML =
+                                    `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
                             }
-                        } else {
+                        } catch (err) {
+                            loading.classList.add('hidden');
                             listContainer.innerHTML =
-                                `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
+                                `<p class="text-red-500">Gagal mengambil data.</p>`;
+                            console.error(err);
                         }
-                    } catch (err) {
-                        loading.classList.add('hidden');
-                        listContainer.innerHTML = `<p class="text-red-500">Gagal mengambil data.</p>`;
-                        console.error(err);
-                    }
-                });
+                    });
+                })
 
                 // Tutup modal
                 closeModalBtn.addEventListener('click', () => {
