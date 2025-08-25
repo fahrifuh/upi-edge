@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lecturer;
 use App\Models\User;
+use App\Models\UserSubscription;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,14 @@ class LecturerController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'dosen',
+        ]);
+
+        // Simpan default subscription
+        UserSubscription::create([
+            'user_id' => $user->id,
+            'plan_id' => 1,
+            'used_quota' => 0,
+            'expires_at' => null
         ]);
 
         $data = [
