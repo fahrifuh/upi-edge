@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
 use App\Http\Controllers\SensorThresholdController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -110,6 +111,17 @@ Route::middleware('auth')->group(function () {
             'update' => 'device.update',
             'destroy' => 'device.destroy',
         ]);
+
+        // Manajemen
+        Route::prefix('/subscription')->name('subscription.')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+            Route::get('/plan', [SubscriptionController::class, 'indexPlan'])->name('plan.index');
+            Route::get('/plan/create', [SubscriptionController::class, 'createPlan'])->name('plan.create');
+            Route::post('/plan', [SubscriptionController::class, 'storePlan'])->name('plan.store');
+            Route::get('/plan/{id}', [SubscriptionController::class, 'editPlan'])->name('plan.edit');
+            Route::put('/plan/{id}', [SubscriptionController::class, 'updatePlan'])->name('plan.update');
+            Route::delete('/plan/{id}', [SubscriptionController::class, 'destroyPlan'])->name('plan.destroy');
+        });
     });
 });
 
