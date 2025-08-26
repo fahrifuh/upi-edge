@@ -446,7 +446,7 @@
                             if (!res.ok) {
                                 listContainer.innerHTML =
                                     `<p class="text-red-500 col-span-2">${data.message}</p>
-                                    <button onclick="pay({{ $plan->id }})" class="bg-green-600 text-white">
+                                    <button onclick="pay({{ $plan->id }})" class="bg-green-600 text-white col-span-2 w-auto me-auto px-4 py-3 rounded-lg">
                                         Upgrade to Pro
                                     </button>`;
                                 return;
