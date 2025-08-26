@@ -11,4 +11,3 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/rsc-data', [RSCDataController::class, 'handleSensorData']);
 Route::get('/application-settings', [ApplicationSettingController::class, 'fetchApplicationSettings']);
-Route::get('/rekomendasi-tanaman/{id}', [RSCDataController::class, 'getRekomendasiTanaman']);
