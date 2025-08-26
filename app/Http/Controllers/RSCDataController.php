@@ -8,6 +8,7 @@ use App\Models\FilteredFixStation;
 use App\Models\FixStation;
 use App\Models\SensorThreshold;
 use App\Models\SubscriptionPlan;
+use App\Models\UserSubscription;
 use App\Services\SubscriptionService;
 use Carbon\Carbon;
 use Gemini\Laravel\Facades\Gemini;
@@ -72,7 +73,10 @@ class RSCDataController extends Controller
 
         $quotaRemaining = SubscriptionService::remainingQuota(Auth::user());
 
-        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds', 'quotaRemaining', 'plan'));
+        $user = Auth::user();
+        $userExpires = $user->subscription->expires_at;
+
+        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds', 'quotaRemaining', 'plan', 'userExpires'));
     }
 
     public function getUniqueDeviceIds(Request $request)
