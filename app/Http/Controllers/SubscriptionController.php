@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentHistory;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,8 @@ class SubscriptionController extends Controller
 
     public function indexHistory()
     {
-        return view('pages.subscription.history.index');
+        $histories = PaymentHistory::get();
+        return view('pages.subscription.history.index', compact('histories'));
     }
 
     public function createPlan()
