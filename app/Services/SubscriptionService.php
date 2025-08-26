@@ -14,17 +14,16 @@ class SubscriptionService
         // user tidak punya paket subscription baik free maupun pro
         if (!$subscription) return false;
 
-
         $plan = $subscription->plan;
-
-        // quota null / 0 berarti unlimited (pro)
-        if (is_null($plan->quota)) {
-            return true;
-        }
 
         // masa pro expired
         if ($subscription->expires_at && Carbon::now()->greaterThan($subscription->expires_at)) {
             return false;
+        }
+
+        // quota null / 0 berarti unlimited (pro)
+        if ($plan->quota == 0) {
+            return true;
         }
 
         // quota masih ada
