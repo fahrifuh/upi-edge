@@ -7,6 +7,8 @@ use App\Models\ActivitySchedule;
 use App\Models\FilteredFixStation;
 use App\Models\FixStation;
 use App\Models\SensorThreshold;
+use App\Models\SubscriptionPlan;
+use App\Services\SubscriptionService;
 use Carbon\Carbon;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
@@ -48,7 +50,7 @@ class RSCDataController extends Controller
     public function indexFilteredMonitoring(Request $request)
     {
         $query = FilteredFixStation::query();
-
+        $plan = SubscriptionPlan::where('price', '>', 0)->first();
         // Filter by date range
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [
@@ -68,7 +70,9 @@ class RSCDataController extends Controller
         // Get unique device IDs from the filtered data
         $uniqueDeviceIds = $data->pluck('device_id')->unique()->sort()->values();
 
-        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds'));
+        $quotaRemaining = SubscriptionService::remainingQuota(Auth::user());
+
+        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds', 'quotaRemaining', 'plan'));
     }
 
     public function getUniqueDeviceIds(Request $request)
@@ -201,8 +205,6 @@ class RSCDataController extends Controller
             $filteredSamples->{$key} = $filteredValue; // set nilai baru
         }
 
-
-
         $filteredFixStation = FilteredFixStation::create([
             'device_id' => $request->device_id,
             'samples' => $filteredSamples,
@@ -221,6 +223,15 @@ class RSCDataController extends Controller
     {
         $mode = request()->query('source', 'fix');
         $scheduleId = request()->query('scheduleId');
+
+        $isQuotaAvailable = SubscriptionService::checkQuota(Auth::user());
+
+        if (!$isQuotaAvailable) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kuota habis, upgrade ke Pro untuk dapat tambahan kuota hingga 1 bulan ke depan'
+            ], 402);
+        }
 
         if ($scheduleId) {
             $jadwal = ActivitySchedule::findOrFail($scheduleId);
@@ -291,7 +302,7 @@ class RSCDataController extends Controller
         $decodedResponse = json_decode($cleanedResponse, true);
 
         return response()->json([
-            'prompt' => $prompt,
+            'success' => true,
             'response' => $decodedResponse
         ]);
     }
