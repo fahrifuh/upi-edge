@@ -120,7 +120,7 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'device.destroy',
         ]);
 
-        // Manajemen
+        // Manajemen Langganan
         Route::prefix('/subscription')->name('subscription.')->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('index');
             Route::get('/plan', [SubscriptionController::class, 'indexPlan'])->name('plan.index');
@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/plan/{id}', [SubscriptionController::class, 'editPlan'])->name('plan.edit');
             Route::put('/plan/{id}', [SubscriptionController::class, 'updatePlan'])->name('plan.update');
             Route::delete('/plan/{id}', [SubscriptionController::class, 'destroyPlan'])->name('plan.destroy');
+            Route::get('/history', [SubscriptionController::class, 'indexHistory'])->name('history.index');
         });
     });
 });
