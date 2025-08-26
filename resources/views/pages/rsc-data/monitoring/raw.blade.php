@@ -120,7 +120,9 @@
                                 <th class="dt-center">pH Tanah</th>
                                 <th class="dt-center">Suhu Tanah</th>
                                 <th class="dt-center">Kelembapan Tanah</th>
-                                <th class="dt-center">Aksi</th>
+                                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                    <th class="dt-center">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0" id="fix-station-tbody">
@@ -135,17 +137,20 @@
                                     <td>{{ $item->samples->Ph }}</td>
                                     <td>{{ $item->samples->Temperature }} &deg;C</td>
                                     <td>{{ $item->samples->Humidity }} %</td>
-                                    <td>
-                                        <form
-                                            action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'rm']) }}"
-                                            method="POST" class="delete-form" data-series="{{ $item->created_at }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa fa-trash text-red-500"></i>
-                                            </button>
-                                        </form>
-                                    </td>
+                                    @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                        <td>
+                                            <form
+                                                action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'rm']) }}"
+                                                method="POST" class="delete-form"
+                                                data-series="{{ $item->created_at }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">
+                                                    <i class="fa fa-trash text-red-500"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -269,17 +274,44 @@
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
                 const data = p.raw;
-                const newRow = table.row.add([
-                    formatTimestamp(data.created_at),
-                    data.device_id,
-                    `${data.samples.Nitrogen} mg/kg`,
-                    `${data.samples.Phosporus} mg/kg`,
-                    `${data.samples.Kalium} mg/kg`,
-                    `${data.samples.Ec} uS/cm`,
-                    `${data.samples.Ph}`,
-                    `${data.samples.Temperature} &deg;C`,
-                    `${data.samples.Humidity} %`,
-                ]).draw(false);
+                const actionHtml = `
+                <form
+                    action="{{ route('rsc-data.destroy', ['id' => '__ID__', 'page' => 'rm']) }}"
+                    method="POST" class="delete-form"
+                    data-series="{{ $item->created_at }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">
+                            <i class="fa fa-trash text-red-500"></i>
+                        </button>
+                    </form>
+                `.replace('__ID__', data.id);
+                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                    const newRow = table.row.add([
+                        formatTimestamp(data.created_at),
+                        data.device_id,
+                        `${data.samples.Nitrogen} mg/kg`,
+                        `${data.samples.Phosporus} mg/kg`,
+                        `${data.samples.Kalium} mg/kg`,
+                        `${data.samples.Ec} uS/cm`,
+                        `${data.samples.Ph}`,
+                        `${data.samples.Temperature} &deg;C`,
+                        `${data.samples.Humidity} %`,
+                        actionHtml,
+                    ]).draw(false);
+                @else
+                    const newRow = table.row.add([
+                        formatTimestamp(data.created_at),
+                        data.device_id,
+                        `${data.samples.Nitrogen} mg/kg`,
+                        `${data.samples.Phosporus} mg/kg`,
+                        `${data.samples.Kalium} mg/kg`,
+                        `${data.samples.Ec} uS/cm`,
+                        `${data.samples.Ph}`,
+                        `${data.samples.Temperature} &deg;C`,
+                        `${data.samples.Humidity} %`,
+                    ]).draw(false);
+                @endif
 
                 let newIndex = table.rows().count() - 1;
                 let newNode = table.row(newIndex).node();

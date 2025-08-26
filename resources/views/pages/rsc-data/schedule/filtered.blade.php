@@ -106,16 +106,18 @@
                                             <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
                                                 <i class="fa-solid fa-lightbulb text-green-500"></i>
                                             </button>
-                                            <form
-                                                action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
-                                                method="POST" class="delete-form"
-                                                data-series="{{ $item->created_at }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit">
-                                                    <i class="fa fa-trash text-red-500"></i>
-                                                </button>
-                                            </form>
+                                            @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                                <form
+                                                    action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
+                                                    method="POST" class="delete-form"
+                                                    data-series="{{ $item->created_at }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit">
+                                                        <i class="fa fa-trash text-red-500"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -151,21 +153,23 @@
                                         <td>{{ $item->samples->Ph }}</td>
                                         <td>{{ $item->samples->Temperature }} &deg;C</td>
                                         <td>{{ $item->samples->Humidity }} %</td>
-                                        <td class="flex space-x-3 items-center">
+                                        <td class="flex space-x-3 items-center justify-center">
                                             <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
                                             <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
                                                 <i class="fa-solid fa-lightbulb text-green-500"></i>
                                             </button>
-                                            <form
-                                                action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
-                                                method="POST" class="delete-form"
-                                                data-series="{{ $item->created_at }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit">
-                                                    <i class="fa fa-trash text-red-500"></i>
-                                                </button>
-                                            </form>
+                                            @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                                <form
+                                                    action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
+                                                    method="POST" class="delete-form"
+                                                    data-series="{{ $item->created_at }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit">
+                                                        <i class="fa fa-trash text-red-500"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -324,6 +328,24 @@
                 const timestamp = new Date(data.created_at);
                 const start = new Date("{{ $start->format('Y-m-d H:i:s') }}");
                 const end = new Date("{{ $end->format('Y-m-d H:i:s') }}");
+                const actionHtml = `
+                <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
+                <button id="openModalBtn" class="rounded-lg" data-id="${data.id}"">
+                    <i class="fa-solid fa-lightbulb text-green-500"></i>
+                </button>
+                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                    <form
+                        action="{{ route('rsc-data.destroy', ['id' => '__ID__', 'page' => 'fs']) }}"
+                        method="POST" class="delete-form"
+                        data-series="{{ $item->created_at }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">
+                                <i class="fa fa-trash text-red-500"></i>
+                            </button>
+                    </form>
+                @endif
+                `.replace('__ID__', data.id);
                 if (timestamp >= start && timestamp <= end) {
                     const newRow = table.row.add([
                         formatTimestamp(data.created_at),
@@ -335,6 +357,7 @@
                         `${data.samples.Ph}`,
                         `${data.samples.Temperature} &deg;C`,
                         `${data.samples.Humidity} %`,
+                        actionHtml,
                     ]).draw(false);
 
                     let newIndex = table.rows().count() - 1;

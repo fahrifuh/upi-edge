@@ -138,20 +138,23 @@
                                     <td>{{ $item->samples->Ph }}</td>
                                     <td>{{ $item->samples->Temperature }} &deg;C</td>
                                     <td>{{ $item->samples->Humidity }} %</td>
-                                    <td class="flex space-x-3 items-center">
+                                    <td class="flex space-x-3 items-center justify-center">
                                         <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
                                         <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
                                             <i class="fa-solid fa-lightbulb text-green-500"></i>
                                         </button>
-                                        <form
-                                            action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fm']) }}"
-                                            method="POST" class="delete-form" data-series="{{ $item->created_at }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa fa-trash text-red-500"></i>
-                                            </button>
-                                        </form>
+                                        @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                            <form
+                                                action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fm']) }}"
+                                                method="POST" class="delete-form"
+                                                data-series="{{ $item->created_at }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">
+                                                    <i class="fa fa-trash text-red-500"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -327,6 +330,24 @@
             var channel = pusher.subscribe('sensor-data');
             channel.bind('SensorData', function(p) {
                 const data = p.filtered;
+                const actionHtml = `
+                <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
+                <button id="openModalBtn" class="rounded-lg" data-id="${data.id}"">
+                    <i class="fa-solid fa-lightbulb text-green-500"></i>
+                </button>
+                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                    <form
+                        action="{{ route('rsc-data.destroy', ['id' => '__ID__', 'page' => 'fm']) }}"
+                        method="POST" class="delete-form"
+                        data-series="{{ $item->created_at }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">
+                                <i class="fa fa-trash text-red-500"></i>
+                            </button>
+                    </form>
+                @endif
+                `.replace('__ID__', data.id);
                 const newRow = table.row.add([
                     formatTimestamp(data.created_at),
                     data.device_id,
@@ -337,6 +358,7 @@
                     `${data.samples.Ph}`,
                     `${data.samples.Temperature} &deg;C`,
                     `${data.samples.Humidity} %`,
+                    actionHtml,
                 ]).draw(false);
 
                 let newIndex = table.rows().count() - 1;
@@ -355,7 +377,7 @@
                 const soilDescription = document.getElementById("soilDescription");
                 const quotaRemaining = document.getElementById("quotaRemaining");
                 const quota = "{{ $quotaRemaining }}"
-                @if (!$userExpires)
+                @if ($userExpires == null || $userExpires == 0)
                     quotaRemaining.textContent = `Sisa kuota Cek Rekomendasi Tanaman: ${quota}`;
                 @endif
 
@@ -375,7 +397,8 @@
                     const diff = expiresTime - now;
                     const hours = Math.floor(diff / (1000 * 60 * 60));
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    quotaRemaining.textContent = `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
+                    quotaRemaining.textContent =
+                        `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
                 };
 
                 // run countdown
@@ -395,7 +418,8 @@
 
                         // stop if all countdown is finished
                         const unfinished = [...countdownElements].some(el => {
-                            return new Date(quotaRemaining.dataset.expires).getTime() > Date.now();
+                            return new Date(quotaRemaining.dataset.expires).getTime() > Date
+                                .now();
                         });
 
                         if (!unfinished) clearInterval(interval);
