@@ -40,7 +40,6 @@ Route::middleware('auth')->group(function () {
 
     // Pembayaran subscription & Callback midtrans
     Route::get('/payment/create/{planId}', [PaymentController::class, 'createTransaction'])->name('payment.create');
-    Route::post('/payment/callback', [PaymentController::class, 'callback']);
 
     // Data RSC - Raw & Filtered 
     Route::prefix('/rsc-data')->name('rsc-data.')->group(function () {
