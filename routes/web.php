@@ -6,6 +6,7 @@ use App\Http\Controllers\ApplicationSettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
 use App\Http\Controllers\SensorThresholdController;
@@ -20,6 +21,9 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // prompt to gemini AI
+    Route::get('/rekomendasi-tanaman/{id}', [RSCDataController::class, 'getRekomendasiTanaman']);
+
     // Profile (Pengaturan Akun)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -33,6 +37,10 @@ Route::middleware('auth')->group(function () {
 
     // Index Log Aktivitas
     Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+
+    // Pembayaran subscription & Callback midtrans
+    Route::get('/payment/create/{planId}', [PaymentController::class, 'createTransaction'])->name('payment.create');
+    Route::post('/payment/callback', [PaymentController::class, 'callback']);
 
     // Data RSC - Raw & Filtered 
     Route::prefix('/rsc-data')->name('rsc-data.')->group(function () {
