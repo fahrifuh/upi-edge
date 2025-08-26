@@ -62,7 +62,7 @@
                             </h3>
                         </div> --}}
                         <!-- Filter Section -->
-                        <div class="bg-gray-50 p-4 rounded-lg">
+                        {{-- <div class="bg-gray-50 p-4 rounded-lg">
                             <h4 class="text-lg font-semibold mb-3">Filter Data</h4>
                             <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div>
@@ -90,13 +90,14 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="overflow-x-scroll">
                     <table class="w-full align-middle border-slate-400 table mb-0 px-2" id="histories-table">
                         <thead>
                             <tr>
+                                <th class="dt-center">Timestamp</th>
                                 <th class="dt-center">Order ID</th>
                                 <th class="dt-center">User</th>
                                 <th class="dt-center">Plan</th>
@@ -107,22 +108,43 @@
                         <tbody class="table-border-bottom-0" id="histories-tbody">
                             @foreach ($histories as $history)
                                 <tr>
+                                    <td>{{ $history->updated_at ? $history->updated_at->translatedFormat('d-m-Y H:i:s') : $history->created_at }}</td>
                                     <td>{{ $history->order_id }}</td>
                                     <td>{{ $history->user->name }}</td>
                                     <td>{{ $history->plan->name }}</td>
                                     <td>{{ $history->payment_type }}</td>
-                                    <td>{{ $history->transaction_status }}</td>
-                                    {{-- <td>
-                                        <form
-                                            action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'rm']) }}"
-                                            method="POST" class="delete-form" data-series="{{ $item->created_at }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa fa-trash text-red-500"></i>
-                                            </button>
-                                        </form>
-                                    </td> --}}
+                                    <td>
+                                        @switch($history->transaction_status)
+                                            @case('settlement')
+                                                <span class="bg-green-600 text-white px-3 py-1.5 rounded-full">
+                                                    {{ ucfirst($history->transaction_status) }}
+                                                </span>
+                                            @break
+
+                                            @case('capture')
+                                                <span class="bg-green-600 text-white px-3 py-1.5 rounded-full">
+                                                    {{ ucfirst($history->transaction_status) }}
+                                                </span>
+                                            @break
+
+                                            @case('pending')
+                                                <span class="bg-yellow-500 text-white px-3 py-1.5 rounded-full text-center">
+                                                    {{ ucfirst($history->transaction_status) }}
+                                                </span>
+                                            @break
+
+                                            @case('challenge')
+                                                <span class="bg-orange-500 text-white px-3 py-1.5 rounded-full">
+                                                    {{ ucfirst($history->transaction_status) }}
+                                                </span>
+                                            @break
+
+                                            @default
+                                                <span class="bg-red-500 text-white px-3 py-1.5 rounded-full">
+                                                    {{ ucfirst($history->transaction_status) }}
+                                                </span>
+                                        @endswitch
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -176,94 +198,7 @@
                         }
                     }
                 });
-
-                // // Handle filter form submission
-                // $('#filterForm').on('submit', function(e) {
-                //     e.preventDefault();
-                //     const formData = new FormData(this);
-                //     const params = new URLSearchParams(formData);
-                //     window.location.href = '{{ route('rsc-data.monitoring.index') }}?' + params.toString();
-                // });
-
-                // // Handle reset filter
-                // $('#resetFilter').on('click', function() {
-                //     window.location.href = '{{ route('rsc-data.monitoring.index') }}';
-                // });
-
-                // // Update device ID options when date range changes
-                // $('#start_date, #end_date').on('change', function() {
-                //     updateDeviceIdOptions();
-                // });
-
-                // // Initialize device options if date range is already set
-                // if ($('#start_date').val() && $('#end_date').val()) {
-                //     updateDeviceIdOptions();
-                // }
-
-                
             });
-
-
-            // // Enable pusher logging - don't include this in production
-            // const formatTimestamp = (timestamp) => {
-            //     return new Date(timestamp).toLocaleString('sv-SE');
-            // }
-
-            // Pusher.logToConsole = true;
-
-            // var pusher = new Pusher("{{ config('broadcasting.connections.pusher.key') }}", {
-            //     cluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}"
-            // });
-
-            // var channel = pusher.subscribe('sensor-data');
-            // channel.bind('SensorData', function(p) {
-            //     const data = p.raw;
-            //     const newRow = table.row.add([
-            //         formatTimestamp(data.created_at),
-            //         data.device_id,
-            //         `${data.samples.Nitrogen} mg/kg`,
-            //         `${data.samples.Phosporus} mg/kg`,
-            //         `${data.samples.Kalium} mg/kg`,
-            //         `${data.samples.Ec} uS/cm`,
-            //         `${data.samples.Ph}`,
-            //         `${data.samples.Temperature} &deg;C`,
-            //         `${data.samples.Humidity} %`,
-            //     ]).draw(false);
-
-            //     let newIndex = table.rows().count() - 1;
-            //     let newNode = table.row(newIndex).node();
-            //     $(newNode).prependTo('#fix-station-tbody')
-            // });
-
-            // @if (session('success'))
-            //     Swal.fire({
-            //         icon: 'success',
-            //         title: 'Berhasil!',
-            //         text: '{{ session('success') }}',
-            //         showConfirmButton: false,
-            //         timer: 2000,
-            //     });
-            // @endif
-
-            // document.querySelectorAll('.delete-form').forEach(form => {
-            //     form.addEventListener('submit', function(event) {
-            //         event.preventDefault();
-
-            //         const dataTimestamp = this.getAttribute('data-series');
-            //         Swal.fire({
-            //             title: 'Konfirmasi',
-            //             text: `Apakah Anda yakin ingin menghapus data RSC dengan timestamp ${dataTimestamp}?`,
-            //             icon: 'warning',
-            //             showCancelButton: true,
-            //             confirmButtonText: 'Ya, Hapus!',
-            //             cancelButtonText: 'Batal'
-            //         }).then((result) => {
-            //             if (result.isConfirmed) {
-            //                 this.submit();
-            //             }
-            //         });
-            //     })
-            // });
         </script>
     @endpush
 </x-app-layout>
