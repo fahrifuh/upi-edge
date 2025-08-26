@@ -371,7 +371,7 @@
 
                     // countdownElements.forEach(el => {
                     // });
-                    const expiresTime = new Date(el.dataset.expires).getTime();
+                    const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
                     const diff = expiresTime - now;
                     const hours = Math.floor(diff / (1000 * 60 * 60));
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -395,7 +395,7 @@
 
                         // stop if all countdown is finished
                         const unfinished = [...countdownElements].some(el => {
-                            return new Date(el.dataset.start).getTime() > Date.now();
+                            return new Date(quotaRemaining.dataset.expires).getTime() > Date.now();
                         });
 
                         if (!unfinished) clearInterval(interval);
