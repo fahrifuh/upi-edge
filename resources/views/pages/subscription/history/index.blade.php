@@ -56,41 +56,6 @@
                         <div class="flex justify-between">
                             <h1 class="text-3xl font-extrabold">Tabel Riwayat Transaksi</h1>
                         </div>
-                        {{-- <div>
-                            <h3>Terakhir diupdate: <span
-                                    id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
-                            </h3>
-                        </div> --}}
-                        <!-- Filter Section -->
-                        {{-- <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="text-lg font-semibold mb-3">Filter Data</h4>
-                            <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div>
-                                    <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal
-                                        Mulai</label>
-                                    <input type="date" id="start_date" name="start_date"
-                                        value="{{ request('start_date') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                </div>
-                                <div>
-                                    <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal
-                                        Akhir</label>
-                                    <input type="date" id="end_date" name="end_date"
-                                        value="{{ request('end_date') }}"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                                </div>
-                                <div class="flex items-end">
-                                    <button type="submit"
-                                        class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">
-                                        Filter
-                                    </button>
-                                    <button type="button" id="resetFilter"
-                                        class="ml-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                                        Reset
-                                    </button>
-                                </div>
-                            </form>
-                        </div> --}}
                     </div>
                 </div>
                 <div class="overflow-x-scroll">
