@@ -60,7 +60,9 @@
                             <h3>Terakhir diupdate: <span
                                     id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
                             </h3>
-                            <p>Sisa kuota Cek Rekomendasi Tanaman: {{ $quotaRemaining }}</p>
+                            <p id="quotaRemaining"
+                                data-expires="{{ \Carbon\Carbon::parse($userExpires)->toIso8601String() }}">
+                            </p>
                         </div>
                         <!-- Filter Section -->
                         <div class="bg-gray-50 p-4 rounded-lg">
@@ -351,7 +353,54 @@
                 const soilBox = document.getElementById("soilClassification");
                 const soilCategory = document.getElementById("soilCategory");
                 const soilDescription = document.getElementById("soilDescription");
+                const quotaRemaining = document.getElementById("quotaRemaining");
+                const quota = "{{ $quotaRemaining }}"
+                @if (!$userExpires)
+                    quotaRemaining.textContent = `Sisa kuota Cek Rekomendasi Tanaman: ${quota}`;
+                @endif
 
+                @if ($userExpires && \Carbon\Carbon::now()->greaterThan($userExpires))
+                    updateCountdowns()
+                @endif
+
+                // Countdown durasi Pro
+                // const countdownEl = document.querySelector('.countdown');
+
+                const updateCountdowns = () => {
+                    const now = Date.now();
+
+                    // countdownElements.forEach(el => {
+                    // });
+                    const expiresTime = new Date(el.dataset.expires).getTime();
+                    const diff = expiresTime - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    quotaRemaining.textContent = `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
+                };
+
+                // run countdown
+                updateCountdowns();
+
+                // calculate time to next minute
+                const now = new Date();
+                const seconds = now.getSeconds();
+                const msUntilNextMinute = (60 - seconds) * 1000;
+
+                // sync to 00 seconds, then interval every minute
+                setTimeout(() => {
+                    updateCountdowns();
+
+                    const interval = setInterval(() => {
+                        updateCountdowns();
+
+                        // stop if all countdown is finished
+                        const unfinished = [...countdownElements].some(el => {
+                            return new Date(el.dataset.start).getTime() > Date.now();
+                        });
+
+                        if (!unfinished) clearInterval(interval);
+                    }, 1000 * 60); // every minute
+                }, msUntilNextMinute);
 
                 // Buka modal
                 openModalBtn.forEach(btn => {
