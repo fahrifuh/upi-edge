@@ -56,10 +56,11 @@
                         <div class="flex justify-between">
                             <h1 class="text-3xl font-extrabold">Tabel Filtered Data Telemetri Fix Station</h1>
                         </div>
-                        <div>
+                        <div class="flex flex-col">
                             <h3>Terakhir diupdate: <span
                                     id="datetime-newest-data">{{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated->created_at)->translatedFormat('d F Y H:i:s') : '-' }}</span>
                             </h3>
+                            <p>Sisa kuota Cek Rekomendasi Tanaman: {{ $quotaRemaining }}</p>
                         </div>
                         <!-- Filter Section -->
                         <div class="bg-gray-50 p-4 rounded-lg">
@@ -137,9 +138,7 @@
                                     <td>{{ $item->samples->Humidity }} %</td>
                                     <td class="flex space-x-3 items-center">
                                         <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                                        <button id="openModalBtn"
-                                            class="rounded-lg"
-                                            data-id="{{ $item->id }}">
+                                        <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
                                             <i class="fa-solid fa-lightbulb text-green-500"></i>
                                         </button>
                                         <form
@@ -191,6 +190,8 @@
     </div>
 
     @push('scripts')
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+        </script>
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
             // Get current timestamp for filename
@@ -204,6 +205,26 @@
                 const seconds = now.getSeconds().toString().padStart(2, '0');
 
                 return `${year}${month}${date}_${hours}${minutes}${seconds}`;
+            }
+
+            // open snap midtrans
+            const pay = (planId) => {
+                const baseUrl = window.location.origin;
+                fetch(`${baseUrl}/payment/create/${planId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        snap.pay(data.snap_token, {
+                            onSuccess: function(res) {
+                                console.log("Payment Success: ", res)
+                            },
+                            onPending: function(res) {
+                                console.log("Payment Pending: ", res)
+                            },
+                            onError: function(res) {
+                                console.log("Payment Error: ", res)
+                            },
+                        })
+                    })
             }
 
             // DataTable (using jQuery)
@@ -345,33 +366,48 @@
                         try {
                             // Panggil endpoint Laravel yang mengakses Gemini
                             const res = await fetch(
-                                `/api/rekomendasi-tanaman/${dataId}?source=filtered`);
+                                `/rekomendasi-tanaman/${dataId}?source=filtered`);
                             const data = await res.json();
                             loading.classList.add('hidden');
 
-                            if (data.response) {
-                                if (data.response.klasifikasi_tanah) {
-                                    soilBox.classList.remove("hidden");
-                                    soilCategory.innerText =
-                                        `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
-                                    soilDescription.innerText = data.response.klasifikasi_tanah
-                                        .deskripsi;
-                                }
-                                if (data.response.tanaman_rekomendasi) {
-                                    data.response.tanaman_rekomendasi.forEach(item => {
-                                        const card = `
-                                    <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
-                                        <h3 class="font-bold text-lg">${item.nama}</h3>
-                                        <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
-                                    <p class="text-gray-600 mt-2">${item.alasan}</p>
-                                    </div>
-                                    `;
-                                        listContainer.insertAdjacentHTML('beforeend', card);
-                                    });
+                            if (!res.ok) {
+                                listContainer.innerHTML =
+                                    `<p class="text-red-500 col-span-2">${data.message}</p>
+                                    <button onclick="pay({{ $plan->id }})" class="bg-green-600 text-white">
+                                        Upgrade to Pro
+                                    </button>`;
+                                return;
+                            }
+
+                            if (data.success) {
+                                if (data.response) {
+                                    if (data.response.klasifikasi_tanah) {
+                                        soilBox.classList.remove("hidden");
+                                        soilCategory.innerText =
+                                            `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
+                                        soilDescription.innerText = data.response.klasifikasi_tanah
+                                            .deskripsi;
+                                    }
+                                    if (data.response.tanaman_rekomendasi) {
+                                        data.response.tanaman_rekomendasi.forEach(item => {
+                                            const card = `
+                                        <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
+                                            <h3 class="font-bold text-lg">${item.nama}</h3>
+                                            <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
+                                            <p class="text-gray-600 mt-2">${item.alasan}</p>
+                                            </div>
+                                            `;
+                                            listContainer.insertAdjacentHTML('beforeend',
+                                                card);
+                                        });
+                                    }
+                                } else {
+                                    listContainer.innerHTML =
+                                        `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
                                 }
                             } else {
                                 listContainer.innerHTML =
-                                    `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
+                                    `<p class="text-red-500">${data.message ?? 'Terjadi kesalahan.'}</p>`;
                             }
                         } catch (err) {
                             loading.classList.add('hidden');
