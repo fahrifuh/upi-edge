@@ -169,7 +169,13 @@ class RSCDataController extends Controller
                 ->get();
         }
 
-        return view('pages.rsc-data.schedule.filtered', compact('data', 'status', 'start', 'end', 'schedule'));
+        $plan = SubscriptionPlan::where('price', '>', 0)->first();
+        $quotaRemaining = SubscriptionService::remainingQuota(Auth::user());
+
+        $user = Auth::user();
+        $userExpires = $user->subscription->expires_at;
+
+        return view('pages.rsc-data.schedule.filtered', compact('data', 'status', 'start', 'end', 'schedule', 'quotaRemaining', 'plan', 'userExpires'));
     }
 
     public function handleSensorData(Request $request)
