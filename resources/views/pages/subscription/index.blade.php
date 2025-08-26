@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="{{ route('device.index') }}" class="block">
+                    <a href="{{ route('subscription.history.index') }}" class="block">
                         <div
                             class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
                             <div>
