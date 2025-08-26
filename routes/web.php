@@ -51,7 +51,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/schedule/show-filtered/{id}', [RSCDataController::class, 'showFilteredPenjadwalan'])->name('filtered-schedule.show');
         Route::get('/monitoring/device-ids', [RSCDataController::class, 'getUniqueDeviceIds'])->name('monitoring.device-ids');
         Route::get('/filtered-monitoring/device-ids', [RSCDataController::class, 'getFilteredUniqueDeviceIds'])->name('filtered-monitoring.device-ids');
-        Route::delete('/{id}', [RSCDataController::class, 'destroy'])->name('destroy');
     });
 
     // Akses Fitur Khusus Dosen & Superuser
@@ -89,6 +88,9 @@ Route::middleware('auth')->group(function () {
             'update' => 'rsc-data.sensor-threshold.update',
             'destroy' => 'rsc-data.sensor-threshold.destroy',
         ]);
+
+        // Hapus data RSC
+        Route::delete('/rsc-data/{id}', [RSCDataController::class, 'destroy'])->name('rsc-data.destroy');
 
         // Index & Save Pengaturan Aplikasi
         Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
