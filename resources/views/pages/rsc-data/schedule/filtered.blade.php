@@ -59,6 +59,11 @@
                         <div class="flex justify-between">
                             <h1 class="text-3xl font-extrabold">Tabel Filtered Data Telemetri Fix Station</h1>
                         </div>
+                        <div class="flex flex-col">
+                            <p id="quotaRemaining"
+                                data-expires="{{ \Carbon\Carbon::parse($userExpires)->toIso8601String() }}">
+                            </p>
+                        </div>
                     </div>
                 </div>
                 @if ($status == 'belum')
@@ -81,6 +86,7 @@
                                     <th class="dt-center">pH Tanah</th>
                                     <th class="dt-center">Suhu Tanah</th>
                                     <th class="dt-center">Kelembapan Tanah</th>
+                                    <th class="dt-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="table-border-bottom-0" id="fix-station-tbody">
@@ -95,6 +101,22 @@
                                         <td>{{ $item->samples->Ph }}</td>
                                         <td>{{ $item->samples->Temperature }} &deg;C</td>
                                         <td>{{ $item->samples->Humidity }} %</td>
+                                        <td class="flex space-x-3 items-center">
+                                            <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
+                                            <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
+                                                <i class="fa-solid fa-lightbulb text-green-500"></i>
+                                            </button>
+                                            <form
+                                                action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
+                                                method="POST" class="delete-form"
+                                                data-series="{{ $item->created_at }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">
+                                                    <i class="fa fa-trash text-red-500"></i>
+                                                </button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -185,6 +207,8 @@
     </div>
 
     @push('scripts')
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}">
+        </script>
         <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
         <script>
             // Get current timestamp for filename
@@ -198,6 +222,26 @@
                 const seconds = now.getSeconds().toString().padStart(2, '0');
 
                 return `${year}${month}${date}_${hours}${minutes}${seconds}`;
+            }
+
+            // open snap midtrans
+            const pay = (planId) => {
+                const baseUrl = window.location.origin;
+                fetch(`${baseUrl}/payment/create/${planId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        snap.pay(data.snap_token, {
+                            onSuccess: function(res) {
+                                console.log("Payment Success: ", res)
+                            },
+                            onPending: function(res) {
+                                console.log("Payment Pending: ", res)
+                            },
+                            onError: function(res) {
+                                console.log("Payment Error: ", res)
+                            },
+                        })
+                    })
             }
 
             const agenda = "{{ $schedule->agenda }}";
@@ -308,7 +352,56 @@
                 const soilBox = document.getElementById("soilClassification");
                 const soilCategory = document.getElementById("soilCategory");
                 const soilDescription = document.getElementById("soilDescription");
+                const quotaRemaining = document.getElementById("quotaRemaining");
+                const quota = "{{ $quotaRemaining }}"
+                @if (!$userExpires)
+                    quotaRemaining.textContent = `Sisa kuota Cek Rekomendasi Tanaman: ${quota}`;
+                @endif
 
+                @if ($userExpires && \Carbon\Carbon::now()->greaterThan($userExpires))
+                    updateCountdowns()
+                @endif
+
+                // Countdown durasi Pro
+                // const countdownEl = document.querySelector('.countdown');
+
+                const updateCountdowns = () => {
+                    const now = Date.now();
+
+                    // countdownElements.forEach(el => {
+                    // });
+                    const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
+                    const diff = expiresTime - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    quotaRemaining.textContent =
+                        `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
+                };
+
+                // run countdown
+                updateCountdowns();
+
+                // calculate time to next minute
+                const now = new Date();
+                const seconds = now.getSeconds();
+                const msUntilNextMinute = (60 - seconds) * 1000;
+
+                // sync to 00 seconds, then interval every minute
+                setTimeout(() => {
+                    updateCountdowns();
+
+                    const interval = setInterval(() => {
+                        updateCountdowns();
+
+                        // stop if all countdown is finished
+                        const unfinished = [...countdownElements].some(el => {
+                            return new Date(quotaRemaining.dataset.expires).getTime() > Date
+                                .now();
+                        });
+
+                        if (!unfinished) clearInterval(interval);
+                    }, 1000 * 60); // every minute
+                }, msUntilNextMinute);
 
                 // Buka modal
                 openModalBtn.forEach(btn => {
@@ -323,33 +416,48 @@
                         try {
                             // Panggil endpoint Laravel yang mengakses Gemini
                             const res = await fetch(
-                                `/api/rekomendasi-tanaman/${dataId}?source=filtered`);
+                                `/rekomendasi-tanaman/${dataId}?source=filtered`);
                             const data = await res.json();
                             loading.classList.add('hidden');
 
-                            if (data.response) {
-                                if (data.response.klasifikasi_tanah) {
-                                    soilBox.classList.remove("hidden");
-                                    soilCategory.innerText =
-                                        `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
-                                    soilDescription.innerText = data.response.klasifikasi_tanah
-                                        .deskripsi;
-                                }
-                                if (data.response.tanaman_rekomendasi) {
-                                    data.response.tanaman_rekomendasi.forEach(item => {
-                                        const card = `
-                                    <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
-                                        <h3 class="font-bold text-lg">${item.nama}</h3>
-                                        <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
-                                    <p class="text-gray-600 mt-2">${item.alasan}</p>
-                                    </div>
-                                    `;
-                                        listContainer.insertAdjacentHTML('beforeend', card);
-                                    });
+                            if (!res.ok) {
+                                listContainer.innerHTML =
+                                    `<p class="text-red-500 col-span-2">${data.message}</p>
+                                    <button onclick="pay({{ $plan->id }})" class="bg-green-600 text-white">
+                                        Upgrade to Pro
+                                    </button>`;
+                                return;
+                            }
+
+                            if (data.success) {
+                                if (data.response) {
+                                    if (data.response.klasifikasi_tanah) {
+                                        soilBox.classList.remove("hidden");
+                                        soilCategory.innerText =
+                                            `Kategori Tanah: ${data.response.klasifikasi_tanah.kategori}`;
+                                        soilDescription.innerText = data.response.klasifikasi_tanah
+                                            .deskripsi;
+                                    }
+                                    if (data.response.tanaman_rekomendasi) {
+                                        data.response.tanaman_rekomendasi.forEach(item => {
+                                            const card = `
+                                        <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
+                                            <h3 class="font-bold text-lg">${item.nama}</h3>
+                                            <p class="text-sm text-green-600">Kategori: ${item.kategori}</p>
+                                            <p class="text-gray-600 mt-2">${item.alasan}</p>
+                                            </div>
+                                            `;
+                                            listContainer.insertAdjacentHTML('beforeend',
+                                                card);
+                                        });
+                                    }
+                                } else {
+                                    listContainer.innerHTML =
+                                        `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
                                 }
                             } else {
                                 listContainer.innerHTML =
-                                    `<p class="text-red-500">Tidak ada data rekomendasi.</p>`;
+                                    `<p class="text-red-500">${data.message ?? 'Terjadi kesalahan.'}</p>`;
                             }
                         } catch (err) {
                             loading.classList.add('hidden');
