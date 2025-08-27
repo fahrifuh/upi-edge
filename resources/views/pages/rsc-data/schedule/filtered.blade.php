@@ -153,23 +153,26 @@
                                         <td>{{ $item->samples->Ph }}</td>
                                         <td>{{ $item->samples->Temperature }} &deg;C</td>
                                         <td>{{ $item->samples->Humidity }} %</td>
-                                        <td class="flex space-x-3 items-center justify-center">
-                                            <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                                            <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
-                                                <i class="fa-solid fa-lightbulb text-green-500"></i>
-                                            </button>
-                                            @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
-                                                <form
-                                                    action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
-                                                    method="POST" class="delete-form"
-                                                    data-series="{{ $item->created_at }}">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit">
-                                                        <i class="fa fa-trash text-red-500"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
+                                        <td class="align-middle">
+                                            <div class="flex gap-2 items-center justify-center">
+                                                <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
+                                                <button id="openModalBtn" class="rounded-lg"
+                                                    data-id="{{ $item->id }}">
+                                                    <i class="fa-solid fa-lightbulb text-green-500"></i>
+                                                </button>
+                                                @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
+                                                    <form
+                                                        action="{{ route('rsc-data.destroy', ['id' => $item->id, 'page' => 'fs']) }}"
+                                                        method="POST" class="delete-form"
+                                                        data-series="{{ $item->created_at }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit">
+                                                            <i class="fa fa-trash text-red-500"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -377,54 +380,47 @@
                 const soilDescription = document.getElementById("soilDescription");
                 const quotaRemaining = document.getElementById("quotaRemaining");
                 const quota = "{{ $quotaRemaining }}"
-                @if (!$userExpires)
+                @if ($userExpires == null || $userExpires == 0)
                     quotaRemaining.textContent = `Sisa kuota Cek Rekomendasi Tanaman: ${quota}`;
-                @endif
+                @else
+                    const updateCountdowns = () => {
+                        const now = Date.now();
 
-                @if ($userExpires && \Carbon\Carbon::now()->greaterThan($userExpires))
-                    updateCountdowns()
-                @endif
+                        // countdownElements.forEach(el => {
+                        // });
+                        const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
+                        const diff = expiresTime - now;
+                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        quotaRemaining.textContent =
+                            `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
+                    };
 
-                // Countdown durasi Pro
-                // const countdownEl = document.querySelector('.countdown');
-
-                const updateCountdowns = () => {
-                    const now = Date.now();
-
-                    // countdownElements.forEach(el => {
-                    // });
-                    const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
-                    const diff = expiresTime - now;
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    quotaRemaining.textContent =
-                        `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
-                };
-
-                // run countdown
-                updateCountdowns();
-
-                // calculate time to next minute
-                const now = new Date();
-                const seconds = now.getSeconds();
-                const msUntilNextMinute = (60 - seconds) * 1000;
-
-                // sync to 00 seconds, then interval every minute
-                setTimeout(() => {
+                    // run countdown
                     updateCountdowns();
 
-                    const interval = setInterval(() => {
+                    // calculate time to next minute
+                    const now = new Date();
+                    const seconds = now.getSeconds();
+                    const msUntilNextMinute = (60 - seconds) * 1000;
+
+                    // sync to 00 seconds, then interval every minute
+                    setTimeout(() => {
                         updateCountdowns();
 
-                        // stop if all countdown is finished
-                        const unfinished = [...countdownElements].some(el => {
-                            return new Date(quotaRemaining.dataset.expires).getTime() > Date
-                                .now();
-                        });
+                        const interval = setInterval(() => {
+                            updateCountdowns();
 
-                        if (!unfinished) clearInterval(interval);
-                    }, 1000 * 60); // every minute
-                }, msUntilNextMinute);
+                            // stop if all countdown is finished
+                            const unfinished = [...countdownElements].some(el => {
+                                return new Date(quotaRemaining.dataset.expires).getTime() > Date
+                                    .now();
+                            });
+
+                            if (!unfinished) clearInterval(interval);
+                        }, 1000 * 60); // every minute
+                    }, msUntilNextMinute);
+                @endif
 
                 // Buka modal
                 openModalBtn.forEach(btn => {
