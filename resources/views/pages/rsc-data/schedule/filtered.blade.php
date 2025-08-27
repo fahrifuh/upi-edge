@@ -390,7 +390,7 @@
                         // });
                         const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
                         const diff = expiresTime - now;
-                        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                         let text = "Sisa durasi langganan Cek Rekomendasi Tanaman: ";
