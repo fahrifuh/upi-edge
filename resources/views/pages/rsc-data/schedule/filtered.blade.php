@@ -390,10 +390,16 @@
                         // });
                         const expiresTime = new Date(quotaRemaining.dataset.expires).getTime();
                         const diff = expiresTime - now;
-                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        quotaRemaining.textContent =
-                            `Sisa durasi langganan Cek Rekomendasi Tanaman: ${hours} jam ${minutes} menit`;
+                        let text = "Sisa durasi langganan Cek Rekomendasi Tanaman: ";
+
+                        if (days > 0) text += `${days} hari `;
+                        if (hours > 0 || days > 0) text += `${hours} jam `;
+                        text += `${minutes} menit`;
+
+                        quotaRemaining.textContent = text.trim();
                     };
 
                     // run countdown
