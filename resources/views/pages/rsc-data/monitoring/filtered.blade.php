@@ -141,7 +141,8 @@
                                     <td class="align-middle">
                                         <div class="flex gap-2 items-center justify-center">
                                             <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                                            <button id="openModalBtn" class="rounded-lg" data-id="{{ $item->id }}">
+                                            <button id="openPromptModalBtn" class="rounded-lg"
+                                                data-id="{{ $item->id }}">
                                                 <i class="fa-solid fa-lightbulb text-green-500"></i>
                                             </button>
                                             @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
@@ -167,11 +168,12 @@
         </div>
     </div>
 
-    <div id="recommendationModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <!-- Modal prompt AI -->
+    <div id="promptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
         <div class="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
             <!-- Tombol close -->
-            <button id="closeModalBtn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+            <button id="closePromptModalBtn" onclick="closeModal(document.getElementById('promptModal'))"
+                class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
                 <i class="fa-solid fa-xmark text-4xl"></i>
             </button>
 
@@ -192,6 +194,33 @@
             <!-- Container hasil -->
             <div id="recommendationList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Card hasil akan ditambahkan via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pilihan paket pro -->
+    <div id="upgradeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
+            <!-- Tombol close -->
+            <button id="closeUpgradeModalBtn" onclick="closeModal(document.getElementById('upgradeModal'))"
+                class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+                <i class="fa-solid fa-xmark text-4xl"></i>
+            </button>
+
+            <h2 class="text-xl font-semibold mb-4">Pilihan paket Pro</h2>
+
+            <!-- Container hasil -->
+            <div id="planList" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                @foreach ($plans as $plan)
+                    <div class="border rounded-xl p-4 shadow hover:shadow-md transition">
+                        <h3 class="font-bold text-lg">{{ $plan->name }}</h3>
+                        <p class="text-gray-600 my-2">Durasi: {{ $plan->duration }} Hari</p>
+                        <p class="text-green-600">Rp{{ $plan->price }}</p>
+                        <button id="openUpgradeModalBtn" onclick="pay({{ $plan->id ?? 0}})" class="bg-red-500 text-white px-3 py-2 mt-2 rounded-lg">
+                            Bayar di sini
+                        </button>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -231,7 +260,20 @@
                                 console.log("Payment Error: ", res)
                             },
                         })
-                    })
+                    });
+            }
+
+            // Buka upgrade modal
+            const openUpgradeModal = () => {
+                document.getElementById('promptModal').classList.add('hidden');
+                document.getElementById('promptModal').classList.remove('flex', 'items-center', 'justify-center');
+                document.getElementById('upgradeModal').classList.remove('hidden');
+                document.getElementById('upgradeModal').classList.add('flex', 'items-center', 'justify-center');
+            }
+
+            const closeModal = (modal) => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'items-center', 'justify-center');
             }
 
             // DataTable (using jQuery)
@@ -334,7 +376,7 @@
                 const data = p.filtered;
                 const actionHtml = `
                 <!-- Button untuk prompt rekomendasi tanaman ke gemini -->
-                <button id="openModalBtn" class="rounded-lg" data-id="${data.id}"">
+                <button id="openPromptModalBtn" class="rounded-lg" data-id="${data.id}"">
                     <i class="fa-solid fa-lightbulb text-green-500"></i>
                 </button>
                 @if (in_array(Auth::user()->role, ['superuser', 'dosen']))
@@ -369,9 +411,9 @@
             });
 
             document.addEventListener("DOMContentLoaded", function() {
-                const openModalBtn = document.querySelectorAll('#openModalBtn');
-                const closeModalBtn = document.getElementById('closeModalBtn');
-                const modal = document.getElementById('recommendationModal');
+                const openPromptModalBtn = document.querySelectorAll('#openPromptModalBtn');
+                const closePromptModalBtn = document.getElementById('closePromptModalBtn');
+                const modal = document.getElementById('promptModal');
                 const loading = document.getElementById('loading');
                 const listContainer = document.getElementById('recommendationList');
                 const soilBox = document.getElementById("soilClassification");
@@ -425,10 +467,11 @@
                     }, msUntilNextMinute);
                 @endif
 
-                // Buka modal
-                openModalBtn.forEach(btn => {
+                // Buka modal hasil prompt AI
+                openPromptModalBtn.forEach(btn => {
                     btn.addEventListener('click', async () => {
                         modal.classList.remove('hidden');
+                        modal.classList.add('flex', 'items-center', 'justify-center');
                         listContainer.innerHTML = ''; // reset isi
                         soilBox.classList.add("hidden"); // reset klasifikasi tanah
                         loading.classList.remove('hidden');
@@ -445,7 +488,7 @@
                             if (!res.ok) {
                                 listContainer.innerHTML =
                                     `<p class="text-red-500 col-span-2">${data.message}</p>
-                                    <button onclick="pay({{ $plan->id }})" class="bg-green-600 text-white col-span-2 w-auto me-auto px-4 py-3 rounded-lg">
+                                    <button id="openUpgradeModalBtn" onclick="openUpgradeModal()" class="bg-green-600 text-white col-span-2 w-auto me-auto px-4 py-3 rounded-lg">
                                         Upgrade to Pro
                                     </button>`;
                                 return;
@@ -489,11 +532,6 @@
                         }
                     });
                 })
-
-                // Tutup modal
-                closeModalBtn.addEventListener('click', () => {
-                    modal.classList.add('hidden');
-                });
 
                 @if (session('success'))
                     Swal.fire({
