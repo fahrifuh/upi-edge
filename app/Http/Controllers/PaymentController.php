@@ -73,7 +73,7 @@ class PaymentController extends Controller
                 $subscription = $payment->user->subscription;
                 $subscription->update([
                     'plan_id' => $payment->plan_id,
-                    'expires_at' => now()->addMonth(),
+                    'expires_at' => now()->addDays($payment->plan->duration),
                     'used_quota' => 0
                 ]);
             }
