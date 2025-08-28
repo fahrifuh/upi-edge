@@ -34,6 +34,12 @@
                                 <x-input-error :messages="$errors->get('quota')" class="mt-2" />
                             </div>
                             <div>
+                                <x-input-label for="duration">{{ __('Durasi (Hari)') }}</x-input-label>
+                                <x-text-input id="duration" class="block mt-1 w-full rounded-xl" type="number"
+                                    name="duration" :value="old('duration')" required autofocus autocomplete="duration" min="0" />
+                                <x-input-error :messages="$errors->get('duration')" class="mt-2" />
+                            </div>
+                            <div>
                                 <x-input-label for="price">{{ __('Harga') }}</x-input-label>
                                 <x-text-input id="price" class="block mt-1 w-full rounded-xl" type="number"
                                     name="price" :value="old('price')" required autofocus autocomplete="price" min="0" step="100" />
