@@ -36,17 +36,21 @@ class SubscriptionController extends Controller
         $request->validate([
             'name' => 'required|string',
             'quota' => 'nullable|integer',
+            'duration' => 'required|integer',
             'price' => 'nullable|integer'
         ], [
             'name.required' => 'Nama paket harus diisi.',
             'name.string' => 'Nama paket harus berupa string yang valid.',
             'quota.integer' => 'Quota harus berupa angka yang valid.',
+            'duration.integer' => 'Durasi harus diisi.',
+            'duration.integer' => 'Durasi harus berupa angka yang valid.',
             'price.integer' => 'Harga harus berupa angka yang valid.',
         ]);
 
         $data = [
             'name' => $request->name,
             'quota' => $request->quota,
+            'duration' => $request->duration,
             'price' => $request->price
         ];
 
@@ -72,17 +76,21 @@ class SubscriptionController extends Controller
         $request->validate([
             'name' => 'required|string',
             'quota' => 'nullable|integer',
+            'duration' => 'required|integer',
             'price' => 'nullable|integer'
         ], [
             'name.required' => 'Nama paket harus diisi.',
             'name.string' => 'Nama paket harus berupa string yang valid.',
             'quota.integer' => 'Quota harus berupa angka yang valid.',
+            'duration.integer' => 'Durasi harus diisi.',
+            'duration.integer' => 'Durasi harus berupa angka yang valid.',
             'price.integer' => 'Harga harus berupa angka yang valid.',
         ]);
 
         $data = [
             'name' => $request->name,
             'quota' => $request->quota,
+            'duration' => $request->duration,
             'price' => $request->price
         ];
 
