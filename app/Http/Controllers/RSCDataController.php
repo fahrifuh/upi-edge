@@ -51,7 +51,7 @@ class RSCDataController extends Controller
     public function indexFilteredMonitoring(Request $request)
     {
         $query = FilteredFixStation::query();
-        $plan = SubscriptionPlan::where('price', '>', 0)->first();
+        $plans = SubscriptionPlan::where('price', '>', 0)->orderBy('price', 'asc')->get();
         // Filter by date range
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('created_at', [
@@ -76,7 +76,7 @@ class RSCDataController extends Controller
         $user = Auth::user();
         $userExpires = $user->subscription->expires_at;
 
-        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds', 'quotaRemaining', 'plan', 'userExpires'));
+        return view('pages.rsc-data.monitoring.filtered', compact('data', 'lastUpdated', 'uniqueDeviceIds', 'quotaRemaining', 'plans', 'userExpires'));
     }
 
     public function getUniqueDeviceIds(Request $request)
@@ -169,13 +169,13 @@ class RSCDataController extends Controller
                 ->get();
         }
 
-        $plan = SubscriptionPlan::where('price', '>', 0)->first();
+        $plans = SubscriptionPlan::where('price', '>', 0)->orderBy('price', 'asc')->get();
         $quotaRemaining = SubscriptionService::remainingQuota(Auth::user());
 
         $user = Auth::user();
         $userExpires = $user->subscription->expires_at;
 
-        return view('pages.rsc-data.schedule.filtered', compact('data', 'status', 'start', 'end', 'schedule', 'quotaRemaining', 'plan', 'userExpires'));
+        return view('pages.rsc-data.schedule.filtered', compact('data', 'status', 'start', 'end', 'schedule', 'quotaRemaining', 'plans', 'userExpires'));
     }
 
     public function handleSensorData(Request $request)
