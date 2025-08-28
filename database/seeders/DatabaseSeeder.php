@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         SubscriptionPlan::create([
             'name' => 'Free',
             'quota' => 30,
+            'duration' => null,
             'price' => 0
         ]);
 
