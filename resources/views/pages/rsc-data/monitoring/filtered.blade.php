@@ -384,7 +384,7 @@
                         <form
                             action="{{ route('rsc-data.destroy', ['id' => '__ID__', 'page' => 'fm']) }}"
                             method="POST" class="delete-form"
-                            data-series="{{ $item->created_at }}">
+                            data-series="{{ $item->created_at ?? '' }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit">
