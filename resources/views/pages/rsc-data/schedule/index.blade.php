@@ -53,6 +53,9 @@
                     <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center">
                         <p class="text-xl font-semibold">Belum ada jadwal yang dibuat.</p>
                     </div>
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center">
+                        <a href="{{ route('activity-schedule.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Buat Jadwal</a>
+                    </div>
                 @endforelse
             </div>
         </div>
