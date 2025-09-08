@@ -6,6 +6,7 @@ use App\Http\Controllers\ApplicationSettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\LecturerController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSCDataController;
@@ -87,6 +88,15 @@ Route::middleware('auth')->group(function () {
             'edit' => 'rsc-data.sensor-threshold.edit',
             'update' => 'rsc-data.sensor-threshold.update',
             'destroy' => 'rsc-data.sensor-threshold.destroy',
+        ]);
+
+        Route::resource('media', MediaController::class)->except('show')->names([
+            'index' => 'media.index',
+            'create' => 'media.create',
+            'store' => 'media.store',
+            'edit' => 'media.edit',
+            'update' => 'media.update',
+            'destroy' => 'media.destroy',
         ]);
 
         // Hapus data RSC
