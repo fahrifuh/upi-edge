@@ -20,6 +20,17 @@
                             </div>
                         </div>
                     </a>
+                    <a href="{{ route('media.index') }}" class="block">
+                        <div
+                            class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-row justify-between items-center">
+                            <div>
+                                <h5 class="text-md text-black font-bold">Data Media</h5>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-seedling p-3 bg-primary text-white rounded-lg"></i>
+                            </div>
+                        </div>
+                    </a>
                 @endif
                 @if (Auth::user()->role == 'superuser')
                     <a href="{{ route('lecturer.index') }}" class="block">
