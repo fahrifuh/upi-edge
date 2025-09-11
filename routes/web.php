@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function () {
 
         // Hapus data RSC
         Route::delete('/rsc-data/{id}', [RSCDataController::class, 'destroy'])->name('rsc-data.destroy');
+        Route::post('/rsc-data/clear', [RSCDataController::class, 'clearSensorData'])->name('rsc-data.clear');
 
         // Index & Save Pengaturan Aplikasi
         Route::get('/application-setting', [ApplicationSettingController::class, 'index'])->name('application-setting.index');
