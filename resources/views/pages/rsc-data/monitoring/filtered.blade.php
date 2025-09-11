@@ -108,6 +108,15 @@
                                 </div>
                             </form>
                         </div>
+                        <div class="text-right">
+                            <form action="{{ route('rsc-data.clear') }}?source=filtered" method="POST" id="clearDataForm">
+                                @csrf
+                                <button type="submit"
+                                    class="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    Clear Data
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="overflow-x-scroll">
@@ -563,6 +572,23 @@
                             }
                         });
                     })
+                });
+            });
+
+            document.getElementById('clearDataForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: `Apakah Anda yakin ingin menghapus seluruh data RSC?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
                 });
             });
         </script>
