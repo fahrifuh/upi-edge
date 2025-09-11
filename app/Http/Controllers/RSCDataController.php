@@ -339,4 +339,25 @@ class RSCDataController extends Controller
 
         return redirect()->route($redirect)->with('success', 'Data RSC berhasil dihapus.');
     }
+
+    public function clearSensorData()
+    {
+        $mode = request()->query('source', 'raw');
+
+        if ($mode === 'raw') {
+            $clear = FixStation::truncate();
+        } else {
+            $clear = FilteredFixStation::truncate();
+        }
+
+        $performedOn = $mode === 'raw' ? new FixStation : new FilteredFixStation;
+
+        activity()
+            ->performedOn($performedOn)
+            ->event('truncate')
+            ->causedBy(Auth::user())
+            ->log('Data RSC di-clear oleh ' . Auth::user()->name . '.');
+
+        return redirect()->back()->with('success', 'Data RSC berhasil di-clear.');
+    }
 }
